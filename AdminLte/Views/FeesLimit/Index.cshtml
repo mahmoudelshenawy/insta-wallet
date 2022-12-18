@@ -1,0 +1,151 @@
+﻿@{
+    ViewData["Title"] = "Fees List";
+
+    var feesLimit = Model.FeesLimitData as FeesLimitFormViewModel;
+
+    feesLimit.tType = Model.tType;
+}
+@section styles {
+
+    <style>
+        .list-group-item-action.active {
+            background: #2d0561;
+            border-color: #2d0561;
+        }
+
+        .btn-purple {
+            background: #2d0561;
+            color: white;
+        }
+
+            .btn-purple:hover {
+                color: white;
+            }
+
+        .btn-blue {
+            background: #08a2d1;
+            color: white;
+        }
+
+            .btn-blue:hover {
+                background: #096885;
+                color: white;
+            }
+
+        .single-fee-form {
+            margin-bottom: 0px !important;
+            margin-top: 0px !important;
+            background-color: #ebeced;
+            color: white !important;
+            text-color: white;
+        }
+    </style>
+}
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header d-flex justify-around">
+                <h3>Currency Payment Methods</h3>
+                <div class="dropdown show ml-auto">
+                    <a class="btn btn-purple dropdown-toggle" href="#" role="button"
+                   id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Currency : @Model.currentCurrency.Name
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        @foreach (var item in Model.Currencies)
+                    {
+                        <a class="dropdown-item" asp-action="Index" asp-route-id="@item.Id">@item.Name</a>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <!-- List group -->
+        <div class="list-group col-md-3" id="myList">
+            <a class="list-group-item list-group-item-action @(Model.tType == null || Model.tType == "Deposit" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-tType="Deposit" data-method="Deposit">Deposit</a>
+            <a class="list-group-item list-group-item-action @(Model.tType == "Withdrawal" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-tType="Withdrawal" data-method="Withdrawal">Payout</a>
+            <a class="list-group-item list-group-item-action @(Model.tType == "Transfer" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-tType="Transfer" data-method="Transfer">Transfer</a>
+            <a class="list-group-item list-group-item-action @( Model.tType == "Exchange" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-tType="Exchange" data-method="Exchange">Exchange</a>
+            <a class="list-group-item list-group-item-action @( Model.tType == "RequestPayment" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-tType="RequestPayment" data-method="Request Payment">Request Payment</a>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header text-center">
+                    <span class="method-title">{payment method}</span>
+                </div>
+                <div class="card-body tab-content">
+                    @if (feesLimit.TypeToDisplay == "Multiple")
+                    {
+                        <partial name="_MultiMethodsFees" model="feesLimit" />
+                    }
+                    else
+                    {
+                        <partial name="_SingleMethodFees" model="feesLimit" />
+                    }
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section scripts{
+
+    @if (ViewBag.IsSuccess == true)
+    {
+        <script>
+            $(document).Toasts('create', {
+                class: 'bg-success',
+                title: 'new method',
+                subtitle: 'Created',
+                body: 'currency payment method is added successfully'
+            })
+        </script>
+    }
+    @if (ViewBag.IsUpdated == true)
+    {
+        <script>
+            $(document).Toasts('create', {
+                class: 'bg-success',
+                title: 'new method',
+                subtitle: 'Updated',
+                body: 'currency payment method is updated successfully'
+            })
+        </script>
+    }
+
+    <script>
+        $(document).ready(function() {
+            let currenct = window.location.href
+            //get the selected method
+            let start = $(".list-group-item.list-group-item-action.active");
+            let currentMethod = start.data("method");
+
+            $(".method-title").text(currentMethod); //change card title
+
+            $(`#${currentMethod}`).show(); // show the tab content
+
+            $(".list-group-item").on("click", function() {
+                var selected = $(this);
+                var method = selected.data("method")
+                $(".method-title").text(method);
+            })
+
+            $('#myList a').on('click', function(e) {
+                // data-method
+                //var item = $(this).data("method");
+                //var urlParams = new URLSearchParams(window.location.search);
+                //var myParam = urlParams.get('tab');
+                //console.log(window.location.href)
+                // window.location.href =
+            })
+        })
+    </script>
+}

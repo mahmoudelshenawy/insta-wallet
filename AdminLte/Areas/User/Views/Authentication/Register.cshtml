@@ -1,0 +1,290 @@
+﻿@model RegisterUserModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section styles {
+
+        <!-- Web Fonts
+    ============================================= -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" 
+integrity="sha512-gxWow8Mo6q6pLa1XH/CcH8JyiSDEtiwJV78E+D+QP0EVasFs8wKXq16G8CLD4CJ2SnonHr4Lm/yY2fSI2+cbmw==" 
+crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        .iti { width: 100%; direction : "rtl";}
+    </style>
+}
+
+
+
+      <div class="col-md-9 col-lg-7 col-xl-5 mx-auto">
+              <div class="bg-white shadow-md rounded p-3 pt-sm-4 pb-sm-5 px-sm-5">
+                <h3 class="fw-400 text-center mb-4">Sign Up</h3>
+                <hr class="mx-n3 mx-sm-n5">
+                <p class="lead text-center">Your information is safe with us.</p>
+                <form id="signupForm" method="post" asp-area="User" asp-controller="Authentication" asp-action="RegisterUser">
+
+                    <input type="hidden" asp-for="DefaultCountry" id="defaultCountry">
+                   <input type="hidden" asp-for="CarrierCode" id="carrierCode">
+                    <input type="hidden" asp-for="FormattedPhone" id="formattedPhone">
+
+                  <div class="mb-3">
+                    <label asp-for="FirstName" class="form-label"></label>
+                    <input class="form-control" asp-for="FirstName" placeholder="Enter Your First Name">
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                  </div>
+
+                  <div class="mb-3">
+                    <label asp-for="LastName" class="form-label"></label>
+                    <input class="form-control" asp-for="LastName" placeholder="Enter Your Last Name">
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                  </div>
+
+                  <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input class="form-control" asp-for="Email" id="email" placeholder="Enter Your Email">
+
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <span class="text-danger" id="email-error"></span>
+                  </div>
+
+                  <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input class="form-control" asp-for="Password" placeholder="Enter Password">
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                  </div>
+                   <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input class="form-control" asp-for="ConfirmPassword" placeholder="Reneter Password">
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                  </div>
+
+                     <div class="mb-3">
+                    <label asp-for="Phone" class="form-label"></label>
+                    <input type="tel" class="form-control" id="phone" asp-for="Phone" style="width:100%;">
+                     <span asp-validation-for="Phone" class="text-danger"></span>
+                     <span class="text-danger " id="phone-error"></span>
+                     <span id="tel-error"></span>
+                  </div>
+                    <div class="mb-3">
+                    <label asp-for="Type" class="form-label"></label>
+                    <select asp-for="Type" class="form-control">
+                        <option value="User">User</option>
+                        <option value="Merchant">Merchant</option>
+                    </select>
+                    <span asp-validation-for="Type" class="text-danger"></span>
+                  </div>
+
+                  <div class="d-grid mt-4 mb-3">
+                      <button type="submit" class="btn btn-primary submit-btn">Sign Up</button>
+                      </div>
+                </form>
+                <p class="text-3 text-muted text-center mb-0">Already have an account? <a class="btn-link" href="login-3.html">Log In</a></p>
+              </div>
+            </div>
+
+
+
+    @section scripts {
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js" 
+integrity="sha512-+gShyB8GWoOiXNwOlBaYXdLTiZt10Iy6xjACGadpqMs20aJOoh+PJt3bwUVA6Cefe7yF7vblX6QwyXZiVwTWGg==" 
+crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.min.js" 
+integrity="sha512-jEc69+XeOdfDwLui+HpPWl8/8+cxkHcwcznwbVGrmVlECJD+L1yN0PljgF2MPs6+1bTX+gNvo/9C3YJ7n4i9qw==" 
+crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="~/client/js/theme.js"></script>
+
+    <script>
+          var input = document.querySelector("#phone");
+          var iti = intlTelInput(input)
+
+        // flag for button disable/enable
+        var hasPhoneError = false;
+        var hasEmailError = false;
+
+        function isValidPhoneNumber(phone)
+       {
+        var filter = /^[\d-]*$/; //only allow digits and hyphens - custom regex
+        if (filter.test(phone))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+       }
+
+
+        function formattedPhone()
+        {
+            if ($('#phone').val != '')
+            {
+                 var number = iti.getNumber();
+                 var p = number.replace(/-|\s/g,"");
+                $("#formattedPhone").val(p);
+            }
+        }
+
+        $(document).ready(function() {
+            input.addEventListener("countrychange", function(e , countryData) {
+           enableDisableButton();
+          iti = window.intlTelInputGlobals.getInstance(input);
+           var countryData = iti.getSelectedCountryData();
+           formattedPhone();
+            $('#phone').val("");
+           $('#defaultCountry').val(countryData.iso2);
+           $('#carrierCode').val(countryData.dialCode);
+        });
+        })
+
+
+    $("#phone").on("change" , function(e) {
+        var phone = e.target.value;
+        var number = iti.getNumber();
+        var countryData = iti.getSelectedCountryData();
+        var error = iti.getValidationError();
+        var isValid = iti.isValidNumber();
+
+        console.log("phone changes start---------")
+        console.log(phone);
+        console.log(number);
+        if ($.trim($('#phone').val()) !== '') { 
+                 if (! isValid || !isValidPhoneNumber($.trim($('#phone').val())))
+                  {
+                        $('#tel-error').addClass('text-danger').html('Please enter a valid International Phone Number.').css("font-weight", "bold");
+                        hasPhoneError = true;
+                        enableDisableButton();
+                        $('#phone-error').hide();
+                    }else{
+                        //here work on number existence
+                        $("#formattedPhone").val(number)
+                        $('#tel-error').html('');
+                    $('#phone-error').html('');
+
+                    checkPhoneExists(phone);
+                    hasPhoneError = false;
+                    enableDisableButton();
+                    }
+            }
+        console.log("phone changes end-----------")
+    })
+
+
+    $("#email").on('change', function(e) {
+        let email = $.trim($('#email').val());
+        console.log(email)
+        if (email != null) {
+            checkEmaiExists(email)
+        }
+    });
+          var currentCountry = null;
+            function getCountry() {
+                return new Promise((resolve , rejected) => {
+                    $.get("https://ipinfo.io/json?token=cea45c0f872c89", function(response) {
+                    resolve(response.country.toLowerCase()) ;
+                }, "jsonp").fail((err) => {
+                    rejected(err)
+                })
+                })
+            }
+
+            getCountry().then((res) => {
+                // assign cournty 
+                if (res) {
+
+                      intlTelInput(input,{
+                        separateDialCode: true,
+                        nationalMode: true,
+                        initialCountry: res,
+                        preferredCountries: ["eg" , "sy" , "tn"] ,
+                        autoPlaceholder: "polite",
+                        initialCountry: "eg",
+                        allowDropdown:true ,
+                        placeholderNumberType: "MOBILE",
+                        utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.min.js"
+                         });
+                   var countryData = iti.getSelectedCountryData();
+                   $('#defaultCountry').val(countryData.iso2);
+                   $('#carrierCode').val(countryData.dialCode);
+
+                   iti.setCountry("eg")
+                }
+            }).catch((err) => {
+                window.intlTelInput(input, {
+                     separateDialCode: true,
+                    nationalMode: true,
+                    initialCountry: "sy"  ,
+                    preferredCountries: ["eg" , "sy" , "tn"] ,
+                    autoPlaceholder: "polite",
+                    allowDropdown:true ,
+                    placeholderNumberType: "MOBILE",
+                   customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+        return "e.g. " + selectedCountryPlaceholder;
+      },
+                    utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.min.js"
+                });
+                var countryData = iti.getSelectedCountryData();
+                   $('#defaultCountry').val(countryData.iso2);
+                   $('#carrierCode').val(countryData.dialCode);
+
+            })
+
+         function enableDisableButton()
+        {
+            if (!hasPhoneError && !hasEmailError) {
+                $('form').find("button[type='submit']").prop('disabled',false);
+                $(".submit-btn").removeAttr("disabled")
+            } else {
+                $('form').find("button[type='submit']").prop('disabled',true);
+                $(".submit-btn").attr("disabled" , true)
+            }
+        }
+
+        function checkEmaiExists(email) {
+            $.ajax({
+               url: "/check-email-exists/"+email,
+                     method: "GET",
+                     success: function(data) {
+                         if(data.exists == true) {
+                             hasEmailError = true;
+                             enableDisableButton();
+                             $("#email-error").text("email is already exist")
+                         }else {
+                             $("#email-error").text("")
+                         }
+
+                      },
+                     error: function(error) {
+                          console.log(error)
+                      }
+                     });
+        } 
+        function checkPhoneExists(phone) {
+            $.ajax({
+               url: "/check-phone-exists/"+phone,
+                     method: "GET",
+                     success: function(data) {
+                         if(data.exists == true) {
+                             hasPhoneError = true;
+                             enableDisableButton();
+                             $("#phone-error").text("phone number is already exist")
+                         }else {
+                             $("#phone-error").text("")
+                         }
+
+                      },
+                     error: function(error) {
+                          console.log(error)
+                      }
+                     });
+        }
+
+    </script>
+}
+
+
+

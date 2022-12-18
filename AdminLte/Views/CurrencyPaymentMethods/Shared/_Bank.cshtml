@@ -1,0 +1,63 @@
+﻿@*@model IEnumerable<BankFormViewModel>*@
+@model CurrencyPaymentMethodViewModel
+@{
+    string Pm = "";
+    int CurrencyId = 0;
+}
+<div class="tab-pane" id="Bank" role="tabpanel">
+    <button class="btn btn-info mb-3" data-toggle="modal" data-target="#AddBank">Add new Bank</button>
+    <br />
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="width: 10px">#</th>
+                <th>Bank Name</th>
+                <th>Acount Name</th>
+                <th>Default</th>
+                <th>Status</th>
+                <th style="width: 40px">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int index = 1;
+            }
+            @if (Model.BankFormViewModels != null)
+            {
+                @foreach (BankFormViewModel bank in Model.BankFormViewModels)
+                {
+                    Pm = bank.Pm;
+                    CurrencyId = bank.CurrencyId;
+                    <tr>
+                        <td>@index</td>
+                        <td>@bank.BankName</td>
+                        <td>@bank.AccountName</td>
+                        <td>
+                            @if (bank.IsDefault)
+                            {
+                                <span class="btn btn-xs btn-success">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="btn btn-xs btn-danger">No</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="btn btn-xs btn-success">Active</span>
+                        </td>
+                        <td>
+                            <button class="btn btn-xs edit-btn btn-purple" data-toggle="modal" data-target="#EditBank" data-id="@bank.BankId"><i class="fa fa-edit"></i></button>
+                            <button class="btn btn-xs delete-btn btn-danger" data-id="@bank.BankId" data-methodId="@Model.PaymentMethodId"><i class="fa fa-trash"></i></button>
+
+         
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <partial name="Shared/_AddBank" model="new BankFormViewModel(){Pm = Model.Pm ,CurrencyId = Model.CurrencyId ,Countries = Model.Countries, PaymentMethodId = Model.PaymentMethodId}" />
+     <partial name="Shared/_EditBank" model="new BankFormViewModel(){Pm = Model.Pm ,CurrencyId = Model.CurrencyId ,Countries = Model.Countries, PaymentMethodId = Model.PaymentMethodId}" />
+</div>
+

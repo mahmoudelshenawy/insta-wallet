@@ -1,0 +1,215 @@
+﻿@using Newtonsoft.Json.Linq
+@{
+    ViewData["Title"] = "Payment Methods";
+}
+
+@section styles {
+
+    <style>
+        .list-group-item-action.active {
+            background: #2d0561;
+            border-color: #2d0561;
+        }
+
+        .btn-purple {
+            background: #2d0561;
+            color: white;
+        }
+
+            .btn-purple:hover {
+                color: white;
+            }
+
+        .btn-blue {
+            background: #08a2d1;
+            color: white;
+        }
+
+            .btn-blue:hover {
+                background: #096885;
+                color: white;
+            }
+    </style>
+}
+    <div class="container">
+        <div class="card">
+            <div class="card-header d-flex justify-around">
+                <h3>Currency Payment Methods</h3>
+                <div class="dropdown show ml-auto">
+                    <a class="btn btn-purple dropdown-toggle" href="#" role="button"
+                   id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Currency : @Model.currentCurrency.Name
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        @foreach (var item in Model.Currencies)
+                    {
+                        <a class="dropdown-item" asp-action="Index" asp-route-id="@item.Id">@item.Name</a>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <!-- List group -->
+        <div class="list-group col-md-3" id="myList">
+            <a class="list-group-item list-group-item-action @(Model.pm == null || Model.pm == "Strip" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Strip" data-method="Strip">Strip</a>
+            <a class="list-group-item list-group-item-action @(Model.pm == "Paypal" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Paypal" data-method="Paypal">Paypal</a>
+            <a class="list-group-item list-group-item-action @(Model.pm == "Paymob" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Paymob" data-method="Paymob">Paymob</a>
+            <a class="list-group-item list-group-item-action @( Model.pm == "Bank" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Bank" data-method="Bank">Bank</a>
+        </div>
+
+        <!-- Tab panes -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header text-center">
+                    <span class="method-title">{payment method}</span> settings
+                </div>
+                <div class="card-body tab-content">
+                    <partial name="Shared/_Strip" model="Model.cmp.StripFormViewModel as StripFormViewModel" />
+                    <partial name="Shared/_Paypal" model="Model.cmp.PaypalFormViewModel as PaypalFormViewModel" />
+                    <partial name="Shared/_Paymob" model="Model.cmp.PaymobFormViewModel as PaymobFormViewModel" />
+                    <partial name="Shared/_Bank" model="Model.cmp as CurrencyPaymentMethodViewModel" />
+
+                </div>
+            </div>
+
+        </div>
+
+        @*@(JObject.Parse(Model.cmp.MethodData)["secret_key"])*@
+    </div>
+</div>
+
+@section scripts{
+
+    @if (ViewBag.IsSuccess == true)
+    {
+        <script>
+            $(document).Toasts('create', {
+                class: 'bg-success',
+                title: 'new method',
+                subtitle: 'Created',
+                body: 'currency payment method is added successfully'
+            })
+        </script>
+    }
+    @if (ViewBag.IsUpdated == true)
+    {
+        <script>
+            $(document).Toasts('create', {
+                class: 'bg-success',
+                title: 'new method',
+                subtitle: 'Updated',
+                body: 'currency payment method is updated successfully'
+            })
+        </script>
+    }
+
+    <script>
+        $(document).ready(function() {
+            let currenct = window.location.href
+            //get the selected method
+            let start = $(".list-group-item.list-group-item-action.active");
+            let currentMethod = start.data("method");
+
+            $(".method-title").text(currentMethod); //change card title
+
+            $(`#${currentMethod}`).show(); // show the tab content
+
+            $(".list-group-item").on("click", function() {
+                var selected = $(this);
+                var method = selected.data("method")
+                $(".method-title").text(method);
+            })
+
+            $('#myList a').on('click', function(e) {
+                // data-method
+                //var item = $(this).data("method");
+                //var urlParams = new URLSearchParams(window.location.search);
+                //var myParam = urlParams.get('tab');
+                //console.log(window.location.href)
+                // window.location.href =
+            })
+        })
+
+        $(".edit-btn").on("click", function() {
+            let btn = $(this)
+            let bank_id = btn.attr("data-id");
+            console.log(bank_id)
+            $.ajax({
+                type: "GET",
+                url: "/admin/Currencies/bank/" + bank_id,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            }).done(function(data) {
+                console.log(data);
+                if (data.success == true && data.bank != null) {
+                    $("#EditBank #AccountName").val("dcsdvrfe");
+                    $("#EditBank #AccountName").val(data.bank.accountName);
+                    $("#EditBank #AccountNumber").val(data.bank.accountNumber);
+                    $("#EditBank #Active").val(data.bank.active);
+                    $("#EditBank #IsDefault").val(data.bank.isDefault);
+                    $(`#EditBank #IsDefaultEdit option[value="${data.bank.isDefault}"]`).attr("selected", "selected");
+                    $(`#EditBank #ActiveEdit option[value="${data.bank.active}"]`).attr("selected", "selected");
+                    $("#EditBank #BankBranchAddress").val(data.bank.bankBranchAddress);
+                    $("#EditBank #BankBranchCity").val(data.bank.bankBranchCity);
+                    $("#EditBank #BankBranchName").val(data.bank.bankBranchName);
+                    $("#EditBank #BankName").val(data.bank.bankName);
+                    $("#EditBank #CountryId").val(data.bank.countryId);
+                    $("#EditBank #SwiftCode").val(data.bank.swiftCode);
+                    $("#EditBank #BankId").val(data.bank.id);
+                    if (data.bank.attachment != null) {
+                        $("#Preview").attr("src", data.bank.attachment.path)
+                    }
+
+                }
+
+            });
+        })
+
+
+        $(".delete-btn").on("click", function() {
+            let btn = $(this);
+            bootbox.confirm({
+                message: "Are You sure you want to delete this bank?",
+                buttons: {
+                    confirm: {
+                        label: 'Yes',
+                        className: 'btn-danger'
+                    },
+                    cancel: {
+                        label: 'No',
+                        className: 'btn-secondary'
+                    }
+                },
+                callback: function(result) {
+                    let id = btn.data("id");
+                     let methodId = btn.attr("data-methodId");
+                    if (result == true) {
+                        $.ajax({
+                            url: `/admin/Currencies/DeleteBank/${id}/${methodId}`,
+                            method: "DELETE",
+                            success: function(data) {
+                                $(document).Toasts('create', {
+                                    class: 'bg-success',
+                                    title: 'Users',
+                                    body: 'method is deleted successfully'
+                                });
+
+                                setTimeout(() => { window.location.reload() }, 2000)
+                            },
+                            error: function(error) {
+                                console.log(error)
+                            }
+                        });
+                    }
+                }
+            });
+        })
+    </script>
+}

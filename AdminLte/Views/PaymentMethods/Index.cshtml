@@ -1,0 +1,121 @@
+﻿@model IEnumerable<PaymentMethodViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        @if (ViewBag.IsSuccess == true)
+        {
+           <div class="alert alert-success">Payment method is added successfully</div>       
+        }
+        @if (ViewBag.IsUpdated == true)
+        {
+           <div class="alert alert-success">Payment method is updaed successfully</div>       
+        }
+
+        <button class="btn btn-primary mb-3 ml-2" data-toggle="modal" data-target="#AddPaymentMethod">
+            Add New Payment Method
+        </button>
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Payment Methods Table</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var pm in Model)
+                        {
+                            <tr>
+                                <td>@pm.Id</td>
+                                <td>@pm.Name</td>
+                                <td>@pm.Status</td>
+                                <td>
+                                    <button asp-action="Edit" asp-route-id="@pm.Id" class="btn btn-info edit-btn" data-toggle="modal"
+                                    data-target="#EditPaymentMethod" 
+                                    data-id="@pm.Id" data-name="@pm.Name" data-status="@pm.Status"> 
+                                        Edit
+                                    </button>
+                                    <button  class="btn btn-danger delete-btn" data-id="@pm.Id">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<partial name="_AddPaymentMethod" model="new PaymentMethodViewModel()"/>
+<partial name="_EditPaymentMethod" model="new PaymentMethodViewModel()"/>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $(".edit-btn").on("click", function() {
+                let btn = $(this)
+                let id = btn.data("id")
+                let name = btn.data("name")
+                let status = btn.data("status")
+
+                $("#id_edit").val(id)
+                $("#name_edit").val(name)
+                $("#status_edit").val(status)
+            });
+
+              $(".delete-btn").on("click", function() {
+                let btn = $(this);
+                bootbox.confirm({
+                    message: "Are You sure you want to delete this payment method?",
+                    buttons: {
+                        confirm: {
+                            label: 'Yes',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: 'No',
+                            className: 'btn-secondary'
+                        }
+                    },
+                    callback: function(result) {
+                        let id = btn.data("id");
+                        if (result == true) { 
+                        $.ajax({
+                            url: "/api/paymentMethods/?id=" + id,
+                            method: "DELETE",
+                            success: function(data) {
+                                $(document).Toasts('create', {
+                                    class: 'bg-success',
+                                    title: 'Users',
+                                    body: 'method is deleted successfully'
+                                });
+
+                                setTimeout(() => { window.location.reload() }, 2000)
+                            },
+                            error: function(error) {
+                                console.log(error)
+                            }
+                        });
+                    }
+                    }
+                });
+            })
+        })
+    </script>
+}

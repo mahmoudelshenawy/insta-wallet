@@ -1,0 +1,22 @@
+﻿@model EmailConfirmModel
+@{
+    ViewData["Title"] = "ConfirmEmail";
+}
+
+<div class="col-md-9 col-lg-7 col-xl-5 mx-auto">
+    <div class="bg-white shadow-md rounded p-3 pt-sm-4 pb-sm-5 px-sm-5">
+        <h3 class="fw-400 text-center mb-4">Confirm Your Email</h3>
+        <hr class="mx-n3 mx-sm-n5">
+        @if(@Model.EmailVerified == true)
+        {
+            <h3 class="lead text-center">Your email is confirmed you can login now.</h3>
+        }
+        else
+        {
+             <h3 class="lead text-center">please check your inbox.</h3>
+        }
+
+    </div>
+</div>
+
+

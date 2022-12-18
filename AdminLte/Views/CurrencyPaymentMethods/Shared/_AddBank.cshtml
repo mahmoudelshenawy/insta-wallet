@@ -1,0 +1,123 @@
+﻿@model BankFormViewModel
+@{
+}
+<div class="modal fade" id="AddBank">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form asp-action="AddNewBank" method="post" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h4 class="modal-title">Add New Bank</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body row">
+                   <input type="hidden" asp-for="Pm"/>
+                   <input type="hidden" asp-for="CurrencyId"/>
+                   <input type="hidden" asp-for="PaymentMethodId"/>
+                    <div class="form-group col-md-6">
+                        <label asp-for="IsDefault" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <select class="form-control" asp-for="IsDefault">
+                                <option>-----</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                            <span asp-validation-for="IsDefault" class="text-danger"></span>
+                        </div>
+                    </div>
+                     <div class="form-group col-md-6">
+                        <label asp-for="Active" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <select class="form-control" asp-for="Active">
+                                <option>-----</option>
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                            <span asp-validation-for="Active" class="text-danger"></span>
+                        </div>
+                    </div>
+                     <div class="form-group col-md-6">
+                        <label asp-for="AccountName" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" asp-for="AccountName">
+                            <span asp-validation-for="AccountName" class="text-danger"></span>
+                        </div>
+                    </div> 
+                     <div class="form-group col-md-6">
+                        <label asp-for="AccountNumber" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" asp-for="AccountNumber">
+                            <span asp-validation-for="AccountNumber" class="text-danger"></span>
+                        </div>
+                    </div> 
+                     <div class="form-group col-md-6">
+                        <label asp-for="SwiftCode" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input class="form-control" asp-for="SwiftCode">
+                            <span asp-validation-for="SwiftCode" class="text-danger"></span>
+                        </div>
+                    </div> 
+
+                     <div class="form-group col-md-6">
+                        <label asp-for="BankName" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" asp-for="BankName">
+                            <span asp-validation-for="BankName" class="text-danger"></span>
+                        </div>
+                    </div> 
+                    <div class="form-group col-md-6">
+                        <label asp-for="BankBranchName" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" asp-for="BankBranchName">
+                            <span asp-validation-for="BankBranchName" class="text-danger"></span>
+                        </div>
+                    </div> 
+                     <div class="form-group col-md-6">
+                        <label asp-for="BankBranchAddress" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" asp-for="BankBranchAddress">
+                            <span asp-validation-for="BankBranchAddress" class="text-danger"></span>
+                        </div>
+                    </div> 
+                       <div class="form-group col-md-6">
+                        <label asp-for="BankBranchCity" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" asp-for="BankBranchCity">
+                            <span asp-validation-for="BankBranchCity" class="text-danger"></span>
+                        </div>
+                    </div> 
+                     <div class="form-group col-md-6">
+                        <label asp-for="CountryId" class=" col-form-label"></label>
+                        <div class="col-sm-10">
+                            <select class="select2" asp-for="CountryId" asp-items="@Model.Countries" style="width:100%;">
+                              
+                            </select>
+                            <span asp-validation-for="CountryId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                    <label asp-for="Logo">File input</label>
+                    <div class="input-group">
+                      <div class="custom-file">
+                        <input asp-for="Logo" class="custom-file-input" 
+                        onchange="document.getElementById('Logo').src = window.URL.createObjectURL(this.files[0])"/>
+                        <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                      </div>
+                      <div class="input-group-append">
+                        <span class="input-group-text">Upload</span>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>

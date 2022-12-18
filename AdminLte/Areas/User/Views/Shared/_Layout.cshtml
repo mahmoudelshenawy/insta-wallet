@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<partial name="/Areas/User/Views/Shared/_Header.cshtml"/>
+<link rel="stylesheet" type="text/css" href="~/client/css/color-blue.css" />
+@RenderSection("styles" , required:false)
+<body class="rtl">
+
+<!-- Preloader -->
+<div id="preloader">
+  <div data-loader="dual-ring"></div>
+</div>
+<!-- Preloader End --> 
+
+<!-- Document Wrapper   
+============================================= -->
+<div id="main-wrapper"> 
+  <!-- Header
+  ============================================= -->
+  <partial name="_Navbar.cshtml"/>
+  <!-- Header End -->
+  
+  <!-- Content
+  ============================================= -->
+  <div id="content" class="py-4">
+    <div class="container">
+     @* <div class="row"> *@
+
+          @RenderBody()
+      
+      @*</div>*@
+    </div>
+  </div>
+  <!-- Content end --> 
+  
+  <!-- Footer
+  ============================================= -->
+ <partial name="_Footer"/>
+  <!-- Footer end --> 
+  
+</div>
+<!-- Document Wrapper end --> 
+
+<!-- Back to Top
+============================================= --> 
+<a id="back-to-top" data-bs-toggle="tooltip" title="Back to Top" href="javascript:void(0)"><i class="fa fa-chevron-up"></i></a> 
+
+<!-- Script --> 
+<partial name="_Scripts" />
+
+@RenderSection("scripts" , required:false)
+</body>
+</html>

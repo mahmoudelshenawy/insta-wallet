@@ -1,0 +1,92 @@
+﻿@{
+    ViewData["Title"] = "Payment Methods";
+}
+
+@section styles {
+
+    <style>
+        .list-group-item-action.active {
+            background: #2d0561;
+            border-color: #2d0561;
+        }
+
+        .btn-purple {
+            background: #2d0561;
+            color: white;
+        }
+    </style>
+}
+    <div class="container">
+        <div class="card">
+            <div class="card-header d-flex justify-around">
+                <h3>Currency Payment Methods</h3>
+                <div class="dropdown show ml-auto">
+                    <a class="btn btn-purple dropdown-toggle" href="#" role="button"
+                   id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Currency : @Model.currentCurrency.Name
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        @foreach (var item in Model.Currencies)
+                    {
+                        <a class="dropdown-item" asp-action="Index" asp-route-id="@item.Id">@item.Name</a>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <!-- List group -->
+        <div class="list-group col-md-3" id="myList" role="tablist">
+            <a class="list-group-item list-group-item-action active" data-toggle="list" data-method="Strip" href="#Strip" role="tab">Strip</a>
+            <a class="list-group-item list-group-item-action" data-toggle="list" data-method="Paypal" href="#Paypal" role="tab">Paypal</a>
+            <a class="list-group-item list-group-item-action" data-toggle="list" data-method="Paymob" href="#Paymob" role="tab">Paymob</a>
+            <a class="list-group-item list-group-item-action" data-toggle="list" data-method="Bank" href="#Bank" role="tab">Bank</a>
+
+        </div>
+
+        <!-- Tab panes -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <span class="method-title">{payment method}</span> settings
+                </div>
+                <div class="card-body tab-content">
+                    <partial name="Shared/_Strip" model="new {secret = Model.secret , tab = Model.tab}" />
+                    <partial name="Shared/_Paypal" />
+                    <partial name="Shared/_Paymob" />
+                    <partial name="Shared/_Bank" />
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        $(document).ready(function() {
+
+            let start = $(".list-group-item.list-group-item-action.active");
+            $(".method-title").text(start.data("method"));
+
+            $(".list-group-item").on("click", function() {
+                // var selected = $(".list-group-item.active");
+                var selected = $(this);
+                var method = selected.data("method")
+                $(".method-title").text(method);
+            })
+
+            $('#myList a').on('click', function(e) {
+                // data-method
+                var item = $(this).data("method");
+                var urlParams = new URLSearchParams(window.location.search);
+                var myParam = urlParams.get('tab');
+                console.log(item , myParam)
+            })
+        })
+    </script>
+}

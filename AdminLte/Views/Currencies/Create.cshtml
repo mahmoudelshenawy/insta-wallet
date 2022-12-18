@@ -1,0 +1,91 @@
+﻿@using AdminLte.Data.Entities
+@model CurrencyViewModel
+@{
+    ViewData["Title"] = "create currency";
+}
+<div class="content-header">
+    <div class="container text-center">
+        @if (ViewBag.IsSuccess == true)
+        {
+            <div class="alert alert-success">Currency is saved successfully</div>
+        }
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Add New Currency</h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <a asp-action="Index" class="btn btn-secondary">Back</a>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <div class="card card-primary">
+            <!-- form start -->
+            <form asp-action="Store" asp-controller="Currencies" method="post" enctype="multipart/form-data">
+                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label asp-for="Name"></label>
+                        <input asp-for="Name" class="form-control" placeholder="name">
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="Code"></label>
+                        <input asp-for="Code" class="form-control" placeholder="code">
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Symbol"></label>
+                        <input asp-for="Symbol" class="form-control" placeholder="symbol">
+                        <span asp-validation-for="Symbol" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="LogoFile">Logo</label>
+                        <div class="input-group">
+                            <div class="custom-file">
+                                <input asp-for="LogoFile" class="custom-file-input" 
+                                onchange="document.getElementById('LogoPreview').src = window.URL.createObjectURL(this.files[0])">
+                                <label class="custom-file-label" for="exampleInputFile">Choose file</label>
+                            </div>
+                            <div class="input-group-append">
+                                <span class="input-group-text">Upload</span>
+                            </div>
+                        </div>
+                        <span asp-validation-for="LogoFile" class="text-danger"></span>
+                        <small>*Recommended Dimension: 64 px * 64 px</small>
+                    </div>
+                    <img src="~/img/currency.jpg" class="img-fluid" width="65" height="65" id="LogoPreview"/>
+                      <div class="form-group">
+                        <label asp-for="Status"></label>
+                        <select asp-for="Status" asp-items="Html.GetEnumSelectList<StatusEnum>()" class="form-control">
+                            <option selected="selected">Please select</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                     <div class="form-group">
+                        <label asp-for="ExchangeFrom"></label>
+                        <select asp-for="ExchangeFrom" asp-items="Html.GetEnumSelectList<ExchangeFromEnum>()" class="form-control">
+                            <option selected="selected">Please select</option>
+                        </select>
+                        <span asp-validation-for="ExchangeFrom" class="text-danger"></span>
+                    </div>
+
+                     <div class="form-check">
+                    <input type="checkbox" class="form-check-input" asp-for="Default">
+                    <label class="form-check-label" asp-for="Default">Make it the default</label>
+                  </div>
+                </div>
+                <!-- /.card-body -->
+
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

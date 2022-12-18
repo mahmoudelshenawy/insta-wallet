@@ -1,0 +1,112 @@
+﻿@*@model FeesLimitFormViewModel
+
+<div class="accordion" id="PaymentMethodsForm">
+    <form asp-action="AddFeeLimit" method="post" id="FeeLimitForm">
+        @{
+            var PaymentMethodsIds = new List<int>();
+            FeesLimitsForm FeeFormLimit = new FeesLimitsForm()
+            {
+                CurrencyId = Model.CurrencyId,
+                TransactionTypeId = Model.TransactionTypeId,
+                PaymentMethodId = PaymentMethodsIds,
+                FixedAmount = new List<decimal>(),
+                PercentAmount = new List<decimal>(),
+                MinLimit = new List<decimal>(),
+                MaxLimit = new List<decimal?>(),
+                HasTransaction = new List<bool>(),
+            };
+            Model.FeesLimits = FeeFormLimit;
+
+        }
+        @for (var i = 0; i < Model.PaymentMethods.Count(); i++)
+        {
+
+            var paymentMethod = Model.PaymentMethods[i];
+            PaymentMethodsIds.Add(paymentMethod.Id);
+            FeeFormLimit.PaymentMethodId = PaymentMethodsIds;
+            var feeForm = Model.PaymentMethods[i].FeeLimits.Count() > 0 ? Model.PaymentMethods[i].FeeLimits[0] : null;
+
+
+            if (feeForm != null)
+            {
+                FeeFormLimit.FixedAmount.Add(feeForm.FixedAmount);
+                FeeFormLimit.PercentAmount.Add(feeForm.PercentAmount);
+                FeeFormLimit.MinLimit.Add(feeForm.MinLimit);
+                FeeFormLimit.MaxLimit.Add(feeForm.MaxLimit);
+                FeeFormLimit.HasTransaction.Add(feeForm.HasTransaction);
+
+            }
+            else
+            {
+                FeeFormLimit.FixedAmount.Add(0.00m);
+                FeeFormLimit.PercentAmount.Add(0.00m);
+                FeeFormLimit.MinLimit.Add(0.00m);
+                FeeFormLimit.MaxLimit.Add(null);
+                FeeFormLimit.HasTransaction.Add(false);
+               
+            }
+            <div class="card mb-0">
+                <div class="card-header single-fee-form" id="@paymentMethod.Id">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#@paymentMethod.Name" aria-expanded="false" aria-controls="collapseTwo">
+                            @paymentMethod.Name
+                        </button>
+                    </h2>
+                </div>
+
+                <div id="@paymentMethod.Name" class="collapse" aria-labelledby="@paymentMethod.Id" data-parent="#PaymentMethodsForm">
+                    <div class="card-body">
+                        <input type="hidden" asp-for="@Model.PaymentMethods[i].Id" />
+                        <input type="hidden" asp-for="@Model.TransactionTypeId" />
+                        <input type="hidden" asp-for="@Model.CurrencyId" />
+                        <div class="form-group clearfix">
+                            <div class="icheck-primary d-inline">
+                                <input type="checkbox" id="checkboxPrimary1" checked>
+                                <label for="checkboxPrimary1">
+                                    Active
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@FeeFormLimit.MinLimit" class=" col-form-label"></label>
+                            <div class="">
+                                <input class="form-control" asp-for="@FeeFormLimit.MinLimit[i]">
+                                <span asp-validation-for="@FeeFormLimit.MinLimit" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@FeeFormLimit.MaxLimit" class=" col-form-label"></label>
+                            <div class="">
+                                <input class="form-control" asp-for="@FeeFormLimit.MaxLimit[i]">
+                                <span asp-validation-for="@FeeFormLimit.MaxLimit" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@FeeFormLimit.FixedAmount" class=" col-form-label"></label>
+                            <div class="">
+                                <input class="form-control" asp-for="@FeeFormLimit.FixedAmount[i]">
+                                <span asp-validation-for="@FeeFormLimit.FixedAmount" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="@FeeFormLimit.PercentAmount" class=" col-form-label"></label>
+                            <div class="">
+                                <input class="form-control" asp-for="@FeeFormLimit.PercentAmount[i]">
+                                <span asp-validation-for="@FeeFormLimit.PercentAmount" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+        }
+        <div class="mt-3 justify-content-between">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+</div>
+
+*@

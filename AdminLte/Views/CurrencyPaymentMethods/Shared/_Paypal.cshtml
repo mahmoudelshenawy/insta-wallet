@@ -1,0 +1,72 @@
+﻿@model PaypalFormViewModel
+
+@if (Model != null)
+{
+<div class="tab-pane" id="Paypal" role="tabpanel">
+    <form class="form-horizontal" asp-action="AddPaypalPaymentMethod" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="CurrencyId"/>
+        <input type="hidden" asp-for="Pm" />
+        <input type="hidden" asp-for="PaymentMethodId" />
+        <div class="form-group row">
+            <label asp-for="ClientId" class="col-sm-2 col-form-label">secret key</label>
+            <div class="col-sm-10">
+                <input type="text"  class="form-control" asp-for="ClientId" placeholder="scret key">
+                <span asp-validation-for="ClientId" class="text-danger"></span>
+            </div>
+        </div>
+       
+          <div class="form-group row">
+            <label asp-for="ClientSecret" class="col-sm-2 col-form-label">publishable key</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" asp-for="ClientSecret" placeholder="publishable key">
+                <span asp-validation-for="ClientSecret" class="text-danger"></span>
+            </div>
+        </div>
+           <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">status</label>
+            <div class="col-sm-10">
+              <select class="form-control" asp-for="Mode" placeholder="Select mode"> 
+                  <option value="Sandbox">Sandbox</option>
+                  <option value="Live">Live</option>
+              </select>
+              <span asp-validation-for="Mode" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label asp-for="ProcessingTime" class="col-sm-2 col-form-label">processing times(days)</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" asp-for="ProcessingTime" placeholder="processing times(days)">
+                <span asp-validation-for="ProcessingTime" class="text-danger"></span>
+            </div>
+        </div>
+           <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">status</label>
+            <div class="col-sm-10">
+              <select class="form-control select2" asp-for="Status" style="width:100%;">
+                  <option value="">Select Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+              </select>
+              <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+        </div>
+          <div class="form-group row">
+            <label for="inputPassword3" class="col-sm-2 col-form-label">Activated for Methods</label>
+            <div class="col-sm-10 select2-purple">
+              <select class="select2" asp-for="ActivatedFor" multiple="multiple" 
+                  data-dropdown-css-class="select2-purple" style="width: 100%;" 
+                  data-placeholder="Select Payment methods">
+                  <option value="Deposit">Deposit</option>
+                  <option value="Withdrawal">Withdrawal</option>
+              </select>
+              <span asp-validation-for="ActivatedFor" class="text-danger"></span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-info">Save</button>
+        <button type="submit" class="btn btn-default float-right">Cancel</button>
+
+    </form>
+</div>
+}                    

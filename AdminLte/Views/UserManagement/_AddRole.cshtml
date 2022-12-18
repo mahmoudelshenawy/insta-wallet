@@ -1,0 +1,16 @@
+﻿@model RoleModel
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <form asp-controller="UserManagement" asp-action="AddRole" method="post">
+             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="input-group input-group-sm">
+            <input asp-for="Name" class="form-control" placeholder="add new role">
+            <span class="input-group-append">
+                <button type="submit" class="btn btn-info btn-flat">Add Role</button>
+            </span>
+        </div>
+        <span asp-validation-for="Name" class="text-danger"></span>
+        </form>
+    </div>
+</div>

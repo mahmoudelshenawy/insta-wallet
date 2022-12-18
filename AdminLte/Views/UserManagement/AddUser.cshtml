@@ -1,0 +1,91 @@
+﻿@model AddUserViewModel
+@{
+    ViewData["Title"] = "AddUser";
+}
+
+<div class="row">
+    <div class="col-md-8 offset-2">
+        @if(ViewBag.IsSuccess == true)
+        {
+            <div class="alert alert-success">user is added successfully</div>
+        }
+        <div class="card card-info">
+            <div class="card-header">
+                <h3 class="card-title">Horizontal Form</h3>
+            </div>
+            <!-- /.card-header -->
+            <!-- form start -->
+            <form class="form-horizontal" method="post">
+                   <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label asp-for="UserName" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input asp-for="UserName" class="form-control" placeholder="User name">
+                        </div>
+                    </div>
+                    <span asp-validation-for="UserName" class="text-danger"></span>
+                    <div class="form-group row">
+                        <label asp-for="FirstName" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input asp-for="FirstName" class="form-control" placeholder="first name">
+                        </div>
+                    </div>
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                    <div class="form-group row">
+                        <label asp-for="LastName" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input asp-for="LastName" class="form-control" placeholder="last name">
+                        </div>
+                    </div>
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                    <div class="form-group row">
+                        <label asp-for="Email" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input asp-for="Email" class="form-control" placeholder="email">
+                        </div>
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <div class="form-group row">
+                        <label asp-for="Password" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input asp-for="Password" class="form-control" placeholder="password">
+                        </div>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <div class="form-group row">
+                        <label asp-for="ConfirmPassword" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-10">
+                            <input asp-for="ConfirmPassword" class="form-control" placeholder="confirm password">
+                        </div>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    <hr />
+                    <h6>Roles</h6>
+                     <div class="form-group row">
+                        <div class="offset-sm-2 col-sm-10">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <div class="form-check m-1">
+                            <input type="hidden" asp-for="@Model.Roles[i].RoleName" />
+                            <input asp-for="@Model.Roles[i].IsSelected" class="form-check-input" />
+                            <label class="form-check-label" asp-for="@Model.Roles[i].IsSelected">
+                                @Model.Roles[i].RoleName
+                            </label>
+                        </div>
+                    }
+                    </div>
+                    </div>
+                   
+                </div>
+                <!-- /.card-body -->
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-info">Save</button>
+                    <button class="btn btn-default float-right">Cancel</button>
+                </div>
+                <!-- /.card-footer -->
+            </form>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,208 @@
+﻿@model DepositViewModel
+@{
+    ViewData["Title"] = "Deposit";
+}
+@section styles {
+    <link rel="stylesheet" type="text/css" href="~/client/vendor/bootstrap-select/css/bootstrap-select.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/client/vendor/currency-flags/css/currency-flags.min.css" />
+}
+    <!-- Steps Progress bar -->
+    <div class="row mt-4 mb-5">
+        <div class="col-lg-11 mx-auto">
+            <div class="row widget-steps">
+                <div class="col-4 step active">
+                    <div class="step-name">@__["Details"]</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#" class="step-dot"></a>
+                </div>
+                <div class="col-4 step disabled">
+                    <div class="step-name">@__["Confirm"]</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#" class="step-dot"></a>
+                </div>
+                <div class="col-4 step disabled">
+                    <div class="step-name">@__["Success"]</div>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <a href="#" class="step-dot"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2 class="fw-400 text-center mt-3 mb-4">@__["Create Deposit Money"]</h2>
+    <div class="row">
+        <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+            <div class="bg-white shadow-sm rounded p-3 pt-sm-5 pb-sm-5 px-sm-5 mb-4">
+
+                <!-- Deposit Money Form
+                ============================================= -->
+                <form id="depositForm" method="post" asp-area="User" asp-action="Confirm" >
+                   <input type="hidden" asp-for="FixedFeeAmount" id="FixedFeeAmount"/>
+                   <input type="hidden" asp-for="PercentFeeAmount" id="PercentFeeAmount"/>
+                   <input type="hidden" asp-for="TotalFees" id="TotalFees"/>
+                    <div class="mb-3">
+                        <label for="youSend">@__["Amount"]</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" asp-for="Amount" class="form-control"
+                               data-bv-field="amount" id="Amount"
+                               onkeyup="this.value = this.value.replace (/^\.|[^\d\.]/g, '')" placeholder="0.00">
+                        </div>
+                        <span class="amountLimit" style="color: red;font-weight: bold"></span>
+                        <span asp-validation-for="Amount" id="Amount-error" class="text-danger"></span>
+
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@__["currency"]</label>
+                        <select asp-for="CurrencyId" id="CurrencyId" class="form-select" required="" asp-items="@Model.Currencies">
+                        </select>
+                        <small class="text-muted">@__["fees"] (<span class="fixedFee">0.00</span> + <span class="percentFee">0.00</span>%)
+                            @__["Transactions fees"]  (<span class="totalFees">0.00</span>) 
+                        </small>
+                        <span asp-validation-for="CurrencyId" id="CurrencyId-error" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="paymentMethod" class="form-label">@__["Payment Method"]</label>
+                        <select asp-for="PaymentMethodId" class="form-select" required="" id="PaymentMethodId">
+                        </select>
+                        <span asp-validation-for="PaymentMethodId" id="PaymentMethodId-error" class="text-danger"></span>
+                    </div>
+                    <p class="text-muted mt-4">
+                        @__["Transactions fees"] <span class="float-end d-flex align-items-center">
+                            <del class="feeFees d-none">1.00 USD</del>
+                            <span class="badge bg-info text-1 text-white fw-500 ms-2 freeFees d-none">Free</span>
+                            <span class="totalFees"></span>
+                        </span>
+                    </p>
+                    @*                    <hr>
+                <p class="text-4 fw-500">You'll deposit <span class="float-end">1,000.00 USD</span></p>*@
+                    <div class="d-grid"><button type="submit" class="btn btn-primary submit-btn">@__["Continue"]</button></div>
+                </form>
+                <!-- Deposit Money Form end -->
+            </div>
+        </div>
+    </div>
+    @section scripts {
+    <script src="~/client/vendor/bootstrap-select/js/bootstrap-select.min.js"></script>
+
+    <script>
+        $(window).on('load', function() {
+            let currency = $("#CurrencyId").val();
+
+            getPaymentMethodsWithFeesLimitsBasedOnSelectedCurrency(currency);
+
+        });
+        $("#CurrencyId").on("change", function() {
+            let currencyId = $("#currency").val();
+            getPaymentMethodsWithFeesLimitsBasedOnSelectedCurrency(currencyId)
+        });
+
+        $("#PaymentMethodId").on("change", function() {
+            let paymentMethod = $("#paymentMethod").val();
+            getDepositAmountFeesLimit()
+        });
+        $("#Amount").on("change", function() {
+            getDepositAmountFeesLimit()
+        });
+
+
+        function getPaymentMethodsWithFeesLimitsBasedOnSelectedCurrency(currency_id) {
+            $.ajax({
+                url: "/deposit/getFeesLimitPaymentMethods/" + currency_id,
+                method: "GET",
+                success: function(data) {
+                    console.log(data)
+                    let paymentMethods = data.paymentMethods;
+                    let output = ""
+                    if (paymentMethods.length > 0) {
+                        paymentMethods.forEach(pm => {
+                            let name = pm.name;
+                            switch (pm.name) {
+                                case "Strip":
+                                    name = "Visa"
+                                    break;
+                                case "Paymob":
+                                    name = "Visa/Mastercard";
+                                    break;
+                                default:
+                                    break;
+                            }
+                            output += `<option value=${pm.id}>${name}</option>`
+                        })
+                    }
+                    $("#PaymentMethodId").html(output);
+                },
+                error: function(error) {
+                    console.log(error)
+                }
+            });
+        }
+
+        function getDepositAmountFeesLimit() {
+            var form = {
+                Amount: $("#Amount").val(),
+                CurrencyId: $("#CurrencyId").val(),
+                PaymentMethodId: $("#PaymentMethodId").val()
+            };
+
+            var data = JSON.stringify(form);
+            $.ajax({
+                url: "/deposit/getDepositAmountFeesLimit",
+                type: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': "application/json"
+                },
+                method: "POST",
+                dataType: "json",
+                data: data,
+            }).done(function(success) {
+                console.log(success)
+                let response = success.response
+                let error = success.error
+                $(".fixedFee").text(response.FixedFeeAmount)
+                $(".percentFee").text(response.PercentFeeAmount)
+
+                $("#FixedFeeAmount").val(response.FixedFeeAmount)
+                $("#PercentFeeAmount").val(response.PercentFeeAmount)
+                $("#TotalFees").val(response.TotalFees)
+
+                 $(".submit-btn").removeAttr("disabled")
+                if (response.TotalFees > 0) {
+                    let currency = $("#CurrencyId :selected").text();
+                    $(".totalFees").html(`<span>${currency} ${response.TotalFees}</span>`)
+                    $(".freeFees").addClass("d-none")
+                } else {
+                    $(".freeFees").removeClass("d-none")
+                    $(".totalFees").addClass("d-none")
+                }
+                if (error.status != undefined) {
+                    $("#Amount-error").text(error.Amount)
+                    $(".submit-btn").attr("disabled" , true)
+                }
+            }).fail(err => {
+                console.log(err.responseJSON)
+                let errors = err.responseJSON
+                //if (errors?.Amount !== undefined) {
+                //    errors.Amount.forEach(e => {
+                //        $(".amountLimit").append(`<span>${e}</span>`)
+                //    })
+                //}
+                for (const error in errors) {
+                    let errArr = errors[error]
+                    errArr.forEach(e => {
+                        $(`#${error}-error`).append(`<span>${e}</span>`)
+                    })
+                }
+                 $(".submit-btn").attr("disabled" , true)
+            })
+
+        }
+    </script>
+    }
