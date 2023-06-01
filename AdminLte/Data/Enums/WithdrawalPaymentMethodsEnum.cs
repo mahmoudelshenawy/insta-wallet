@@ -11,6 +11,7 @@
         PerfectMoney,
         Usdt,
         Payoneer,
-        ZainCashIraq
+        ZainCashIraq,
+        OrangeMoney
     }
 }

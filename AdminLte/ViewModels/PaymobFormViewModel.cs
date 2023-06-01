@@ -14,7 +14,7 @@ namespace AdminLte.ViewModels
         public string Hmac { get; set; }
         [Required]
         public string Status { get; set; }
-        public string ActivatedFor { get; set; }
+        public string[] ActivatedFor { get; set; }
         [Required]
         public string Pm { get; set; }
         [Required]

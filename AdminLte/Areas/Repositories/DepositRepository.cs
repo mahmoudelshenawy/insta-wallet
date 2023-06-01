@@ -15,11 +15,13 @@ namespace AdminLte.Areas.Repositories
     {
         private readonly ApplicationDbContext _context;
         private readonly IUploadService _UploadService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public DepositRepository(ApplicationDbContext context, IUploadService uploadService)
+        public DepositRepository(ApplicationDbContext context, IUploadService uploadService , IServiceProvider serviceProvider)
         {
             _context = context;
             _UploadService = uploadService;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task<List<Currency>> ActiveCurrencyListForDeposit()
@@ -68,7 +70,7 @@ namespace AdminLte.Areas.Repositories
             fe.CurrencyId == currency_id && fe.HasTransaction == true)
                 .ToListAsync();
 
-            var currencyPaymentMethods = await _context.CurrencyPaymentMethods.Where(c => c.CurrencyId == currency_id 
+            var currencyPaymentMethods = await _context.CurrencyPaymentMethods.Where(c => c.CurrencyId == currency_id
             && c.ActivatedFor.Contains("Deposit"))
                 .ToListAsync();
             var depositCurrencyPaymentMethods = new List<CurrencyPaymentMethod>();
@@ -132,8 +134,8 @@ namespace AdminLte.Areas.Repositories
             {
                 foreach (var cpm in currencyPaymentMethods)
                 {
-                    var bank_id = (int?) JObject.Parse(cpm.MethodData)["bankId"];
-                    if(bank.Id == bank_id)
+                    var bank_id = (int?)JObject.Parse(cpm.MethodData)["bankId"];
+                    if (bank.Id == bank_id)
                     {
                         banksList.Add(bank);
                     }
@@ -161,7 +163,7 @@ namespace AdminLte.Areas.Repositories
                     Type = depositView.File.ContentType
                 };
                 _context.Add(file);
-              await  _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
                 FileId = file.Id;
             }
             var deposit = new Deposit
@@ -176,10 +178,10 @@ namespace AdminLte.Areas.Repositories
                 Uuid = GenerateSecurityStamp(),
                 Status = Enum.Parse<PaymentStatus>(depositView.Status),
                 PaymentType = Enum.Parse<PaymentTypeEnum>(depositView.PaymentType),
-                AttachmentId = FileId,
+                AttachmentId = FileId == 0 ? null : FileId,
             };
-           
-             _context.Deposits.Add(deposit);
+
+            _context.Deposits.Add(deposit);
             await _context.SaveChangesAsync();
             var transaction = new Transaction
             {
@@ -192,12 +194,12 @@ namespace AdminLte.Areas.Repositories
                 Status = Enum.Parse<PaymentStatus>(depositView.Status),
                 PaymentType = Enum.Parse<PaymentTypeEnum>(depositView.PaymentType),
                 Total = depositView.Amount,
-                Subtotal = depositView.Amount  - (depositView.TotalFees ?? 0.00m),
+                Subtotal = depositView.Amount - (depositView.TotalFees ?? 0.00m),
                 TransactionReferenceId = deposit.Id,
                 TransactionTypeId = transactionType.Id,
                 PaymentTypeId = depositView.PaymentTypeId,
-                UserType = !string.IsNullOrEmpty(depositView.UserId) ? UserRegisterType.Registered : UserRegisterType.Unregistered, 
-                AttachmentId = FileId
+                UserType = !string.IsNullOrEmpty(depositView.UserId) ? UserRegisterType.Registered : UserRegisterType.Unregistered,
+                AttachmentId = FileId == 0 ? null : FileId
             };
             await _context.SaveChangesAsync();
             //based on paymentType add to wallet or not
@@ -218,5 +220,34 @@ namespace AdminLte.Areas.Repositories
             RandomNumberGenerator.Fill(bytes);
             return Convert.ToBase64String(bytes);
         }
+
+        public async Task<string> getUserEmail(string id)
+        {
+            var user = await _context.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+            return user.Email;
+        }
+
+        public async Task<string> getCurrencyCode(int id)
+        {
+            var currency = await _context.Currencies.Where(c => c.Id == id).FirstOrDefaultAsync();
+            return currency.Code.ToLower();
+        }
+
+        public async Task<string> GetPaypalClientId(DepositViewModel depositView)
+        {
+            var currencyPaymentMethod = await _context.CurrencyPaymentMethods
+                   .Where(cp => cp.CurrencyId == depositView.CurrencyId && cp.PaymentMethodId == depositView.PaymentMethodId)
+                   .FirstOrDefaultAsync();
+
+            var SecretKey = (string)JObject.Parse(currencyPaymentMethod.MethodData)["ClientId"] ?? "";
+            return SecretKey;
+        }
+        public async Task<Deposit> TestFeature()
+        {
+            var deposit = new Deposit();
+            var depositres = await deposit.GetDepositAsync();
+            return depositres;
+        }
+
     }
 }

@@ -1,0 +1,118 @@
+﻿@model StripeViewModel
+<h2 class="font-weight-400 text-center mt-3 mb-3 "> @__["Deposit by strip"]</h2>
+<div class="row">
+    <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+        <!-- Request Money Success
+        ============================================= -->
+        <div class="bg-white text-center shadow-sm rounded p-3 pt-sm-4 pb-sm-5 px-sm-5 mb-4">
+            <form id="payment-form" method="POST" asp-action="MakeStripePayment">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group mb-2">
+                            <label class="text-center" for="fullName">
+                                @__["full-name"]
+                            </label>
+                            <input type="text" class="form-control" asp-for="FullName" maxlength="50" id="fullName">
+                            <small class="text-info">@__["card-holder-msg"]</small><br />
+                            <span class="text-danger" asp-validation-for="FullName"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="text-center" for="email">@__["email"]</label>
+                            <input type="text" readonly class="form-control" asp-for="Email" id="Email" value="@Model.Email">
+                            <span class="text-danger" asp-validation-for="Email"></span>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label class="text-center" for="phone">@__["phone"]</label>
+
+                            <input type="text" class="form-control" asp-for="Phone" maxlength="25" id="phone">
+                            <small class="text-info">@__["securety-required"]</small><br />
+                            <span class="text-danger" asp-validation-for="Phone"></span>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label class="text-center" for="usr">@__["card-no"]</label>
+                            <div id="card-number"></div>
+                            <input type="text" class="form-control" asp-for="CardNumber" maxlength="19" id="cardNumber" onkeypress="return isNumber(event)">
+                            <div id="card-errors" class="error"></div><br />
+                            <span class="text-danger" asp-validation-for="CardNumber"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 mb-2">
+                        <div class="form-group mb-0">
+                            <div class="row">
+                                <div class="col-lg-4 pr-4">
+                                    <label for="usr">@__["Month"]</label>
+                                    <div>
+                                        <select class="form-control" asp-for="Month" id="month">
+                                            <option value="01">01</option>
+                                            <option value="02">02</option>
+                                            <option value="03">03</option>
+                                            <option value="04">04</option>
+                                            <option value="05">05</option>
+                                            <option value="06">06</option>
+                                            <option value="07">07</option>
+                                            <option value="08">08</option>
+                                            <option value="09">09</option>
+                                            <option value="10">10</option>
+                                            <option value="10">11</option>
+                                            <option value="12">12</option>
+                                        </select>
+                                        <span class="text-danger" asp-validation-for="Month"></span>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4 mt-4 mt-lg-0 pr-4">
+                                    <label for="usr">@__["Year"]</label>
+                                    <input type="text" class="form-control" asp-for="Year" id="year" maxlength="2" onkeypress="return isNumber(event)">
+                                    <span class="text-danger" asp-validation-for="Year"></span>
+                                </div>
+
+                                <div class="col-lg-4 mt-4 mt-lg-0">
+                                    <div class="form-group">
+                                        <label for="usr">@__["cvc"]</label>
+                                        <input type="text" class="form-control" asp-for="Cvc" id="cvc" maxlength="4" onkeypress="return isNumber(event)">
+                                        <span class="text-danger" asp-validation-for="Cvc"></span>
+                                        <div id="card-cvc"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-12">
+                        <p class="error" id="stripeError"></p>
+                    </div>
+                </div>
+                <input type="hidden" asp-for="Amount" value="@Model.Amount" />
+                <input type="hidden" asp-for="TotalFees" value="@Model.TotalFees" />
+                <input type="hidden" asp-for="CurrencyId" value="@Model.CurrencyId" />
+                <input type="hidden" asp-for="PaymentMethodId" value="@Model.PaymentMethodId" />
+                <input type="hidden" asp-for="Status" value="@Model.Status" />
+                <input type="hidden" asp-for="FixedFeeAmount" value="@Model.FixedFeeAmount" />
+                <input type="hidden" asp-for="PercentFeeAmount" value="@Model.PercentFeeAmount" />
+                <div class="row m-0 justify-content-between mt-2">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary col-12 px-4 py-2 float-left" style="margin-top:10px;" id="deposit-stripe-submit-btn">
+                            <i class="spinner fa fa-spinner fa-spin" style="display: none;"></i> <span id="deposit-stripe-submit-btn-txt" style="font-weight: bolder;">@__["submit"]</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <!-- Request Money Success end -->
+    </div>
+</div>
+@section scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function isNumber(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

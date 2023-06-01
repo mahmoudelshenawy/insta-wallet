@@ -295,7 +295,7 @@ namespace AdminLte.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("AttachmentId")
+                    b.Property<int?>("AttachmentId")
                         .HasColumnType("int");
 
                     b.Property<int?>("BankId")
@@ -320,7 +320,7 @@ namespace AdminLte.Migrations
                     b.Property<string>("PaymentType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PaymentTypeId")
+                    b.Property<int?>("PaymentTypeId")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("PercentFeeAmount")
@@ -465,6 +465,55 @@ namespace AdminLte.Migrations
                     b.ToTable("PaymentMethods");
                 });
 
+            modelBuilder.Entity("AdminLte.Data.Entities.PayoutSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("BankSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CashSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PayoneerSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaypalSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("WalletSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PayoutSettings");
+                });
+
             modelBuilder.Entity("AdminLte.Data.Entities.Settings", b =>
                 {
                     b.Property<int>("Id")
@@ -497,13 +546,13 @@ namespace AdminLte.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("AttachmentId")
+                    b.Property<int?>("AttachmentId")
                         .HasColumnType("int");
 
                     b.Property<int?>("BankId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ConfirmAttachmentId")
+                    b.Property<int?>("ConfirmAttachmentId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -518,7 +567,6 @@ namespace AdminLte.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EndUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Extra")
@@ -538,7 +586,7 @@ namespace AdminLte.Migrations
                     b.Property<string>("PaymentType")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PaymentTypeId")
+                    b.Property<int?>("PaymentTypeId")
                         .HasColumnType("int");
 
                     b.Property<decimal?>("PercentFeeAmount")
@@ -593,27 +641,24 @@ namespace AdminLte.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AttachmentId")
-                        .IsUnique();
-
-                    b.HasIndex("BankId")
                         .IsUnique()
-                        .HasFilter("[BankId] IS NOT NULL");
+                        .HasFilter("[AttachmentId] IS NOT NULL");
+
+                    b.HasIndex("BankId");
 
                     b.HasIndex("ConfirmAttachmentId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[ConfirmAttachmentId] IS NOT NULL");
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("EndUserId")
-                        .IsUnique();
+                    b.HasIndex("EndUserId");
 
                     b.HasIndex("PaymentMethodId");
 
-                    b.HasIndex("TransactionTypeId")
-                        .IsUnique();
+                    b.HasIndex("TransactionTypeId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Transactions");
                 });
@@ -668,6 +713,108 @@ namespace AdminLte.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Wallets");
+                });
+
+            modelBuilder.Entity("AdminLte.Data.Entities.Withdrawal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("FixedFeeAmount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0.00m);
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PayoutSettingId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("PercentFeeAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalFees")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Uuid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.HasIndex("PayoutSettingId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Withdrawals");
+                });
+
+            modelBuilder.Entity("AdminLte.Data.Entities.WithdrawalDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("BankSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CashSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PayoneerSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PaypalSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WalletSetting")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WithdrawalId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WithdrawalId")
+                        .IsUnique();
+
+                    b.ToTable("WithdrawalDetails");
                 });
 
             modelBuilder.Entity("AdminLte.Models.ApplicationUser", b =>
@@ -950,9 +1097,7 @@ namespace AdminLte.Migrations
                 {
                     b.HasOne("AdminLte.Data.Entities.Attachment", "Attachment")
                         .WithMany()
-                        .HasForeignKey("AttachmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AttachmentId");
 
                     b.HasOne("AdminLte.Data.Entities.Bank", "Bank")
                         .WithMany()
@@ -1010,24 +1155,41 @@ namespace AdminLte.Migrations
                     b.Navigation("TransactionTypes");
                 });
 
+            modelBuilder.Entity("AdminLte.Data.Entities.PayoutSetting", b =>
+                {
+                    b.HasOne("AdminLte.Data.Entities.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AdminLte.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentMethod");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("AdminLte.Data.Entities.Transaction", b =>
                 {
                     b.HasOne("AdminLte.Data.Entities.Attachment", "Attachment")
                         .WithOne()
                         .HasForeignKey("AdminLte.Data.Entities.Transaction", "AttachmentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("AdminLte.Data.Entities.Bank", "Bank")
-                        .WithOne()
-                        .HasForeignKey("AdminLte.Data.Entities.Transaction", "BankId")
+                        .WithMany()
+                        .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("AdminLte.Data.Entities.Attachment", "ConfirmFile")
                         .WithOne()
                         .HasForeignKey("AdminLte.Data.Entities.Transaction", "ConfirmAttachmentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("AdminLte.Data.Entities.Currency", "Currency")
                         .WithMany("Transactions")
@@ -1036,10 +1198,8 @@ namespace AdminLte.Migrations
                         .IsRequired();
 
                     b.HasOne("AdminLte.Models.ApplicationUser", "EndUser")
-                        .WithOne()
-                        .HasForeignKey("AdminLte.Data.Entities.Transaction", "EndUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .WithMany()
+                        .HasForeignKey("EndUserId");
 
                     b.HasOne("AdminLte.Data.Entities.PaymentMethod", "PaymentMethod")
                         .WithMany("Transactions")
@@ -1048,14 +1208,14 @@ namespace AdminLte.Migrations
                         .IsRequired();
 
                     b.HasOne("AdminLte.Data.Entities.TransactionTypes", "TransactionType")
-                        .WithOne()
-                        .HasForeignKey("AdminLte.Data.Entities.Transaction", "TransactionTypeId")
+                        .WithMany()
+                        .HasForeignKey("TransactionTypeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("AdminLte.Models.ApplicationUser", "User")
-                        .WithOne()
-                        .HasForeignKey("AdminLte.Data.Entities.Transaction", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -1093,6 +1253,85 @@ namespace AdminLte.Migrations
                     b.Navigation("Currency");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AdminLte.Data.Entities.Withdrawal", b =>
+                {
+                    b.HasOne("AdminLte.Data.Entities.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AdminLte.Data.Entities.PaymentMethod", "PaymentMethod")
+                        .WithMany()
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AdminLte.Data.Entities.PayoutSetting", "PayoutSetting")
+                        .WithMany()
+                        .HasForeignKey("PayoutSettingId");
+
+                    b.HasOne("AdminLte.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Currency");
+
+                    b.Navigation("PaymentMethod");
+
+                    b.Navigation("PayoutSetting");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("AdminLte.Data.Entities.WithdrawalDetail", b =>
+                {
+                    b.HasOne("AdminLte.Data.Entities.Withdrawal", null)
+                        .WithOne("WithdrawalDetail")
+                        .HasForeignKey("AdminLte.Data.Entities.WithdrawalDetail", "WithdrawalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("AdminLte.Models.ApplicationUser", b =>
+                {
+                    b.OwnsMany("AdminLte.Data.Entities.RefreshToken", "RefreshTokens", b1 =>
+                        {
+                            b1.Property<string>("ApplicationUserId")
+                                .HasColumnType("nvarchar(450)");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"), 1L, 1);
+
+                            b1.Property<DateTime>("CreatedOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime>("ExpiresOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<DateTime?>("RevokedOn")
+                                .HasColumnType("datetime2");
+
+                            b1.Property<string>("Token")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ApplicationUserId", "Id");
+
+                            b1.ToTable("RefreshToken");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ApplicationUserId");
+                        });
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -1167,6 +1406,12 @@ namespace AdminLte.Migrations
             modelBuilder.Entity("AdminLte.Data.Entities.TransactionTypes", b =>
                 {
                     b.Navigation("FeeLimits");
+                });
+
+            modelBuilder.Entity("AdminLte.Data.Entities.Withdrawal", b =>
+                {
+                    b.Navigation("WithdrawalDetail")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("AdminLte.Models.ApplicationUser", b =>

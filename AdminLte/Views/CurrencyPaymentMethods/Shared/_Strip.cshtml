@@ -2,7 +2,7 @@
 @model StripFormViewModel
 
 @if(Model != null) {
-<div class="tab-pane @(Model.Pm != null && Model.Pm == "Strip" ? "active" : "")" id="Strip" role="tabpanel">
+<div class="tab-pane @(Model.Pm != null && Model.Pm == "Stripe" ? "active" : "")" id="Strip" role="tabpanel">
     <form class="form-horizontal" asp-action="AddStripPaymentMethod" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="CurrencyId"/>

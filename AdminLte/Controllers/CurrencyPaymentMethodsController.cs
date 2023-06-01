@@ -28,7 +28,7 @@ namespace AdminLte.Controllers
 
         public async Task<object> GetBasicData(int id, string pm)
         {
-            pm = !string.IsNullOrEmpty(pm) ? pm : "Strip";
+            pm = !string.IsNullOrEmpty(pm) ? pm : "Stripe";
             var currentCurrency = await _context.Currencies.FirstOrDefaultAsync(c => c.Id == id);
             var paymentMethod = await _context.PaymentMethods.FirstOrDefaultAsync(p => p.Name == pm);
 
@@ -191,7 +191,8 @@ namespace AdminLte.Controllers
                 string activatedFor;
                 if (paymobForm.Status == "Active")
                 {
-                    activatedFor = JsonSerializer.Serialize("[deposit]");
+                    var activeFor = new[] { "Deposit" }; 
+                    activatedFor = JsonSerializer.Serialize(activeFor);
                 }
                 else
                 {
@@ -407,7 +408,7 @@ namespace AdminLte.Controllers
 
             switch (paymentMethod.Name)
             {
-                case "Strip":
+                case "Stripe":
                     var stripFormModel = new StripFormViewModel()
                     {
                         Pm = paymentMethod.Name,
@@ -469,8 +470,9 @@ namespace AdminLte.Controllers
                             paymobFormModel.IntegrationId = (string)JObject.Parse(paymobCurrencyPaymentMethod.MethodData)["IntegrationId"] ?? "";
                             paymobFormModel.Hmac = (string)JObject.Parse(paymobCurrencyPaymentMethod.MethodData)["Hmac"] ?? "";
                             paymobFormModel.IFrameId = (string)JObject.Parse(paymobCurrencyPaymentMethod.MethodData)["IFrameId"] ?? "";
-                            paymobFormModel.ActivatedFor = JsonSerializer.Deserialize<string>(paymobCurrencyPaymentMethod.ActivatedFor);
-                            paymobFormModel.Status = JsonSerializer.Deserialize<string>(paymobCurrencyPaymentMethod.ActivatedFor) != "" ? "Active" : "Inactive";
+                            paymobFormModel.ActivatedFor = JsonSerializer.Deserialize<string[]>(paymobCurrencyPaymentMethod.ActivatedFor);
+                           // paymobFormModel.Status = JsonSerializer.Deserialize<string>(paymobCurrencyPaymentMethod.ActivatedFor) != "" ? "Active" : "Inactive";
+                            paymobFormModel.Status = JsonSerializer.Deserialize<string[]>(paymobCurrencyPaymentMethod.ActivatedFor).Count() > 0 ? "Active" : "Inactive";
                         }
                     }
                     currencyPaymentViewModel.PaymobFormViewModel = paymobFormModel;

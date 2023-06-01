@@ -16,5 +16,7 @@ namespace AdminLte.Models
         public string? CarrierCode { get; set; }
         public string? DefaultCountry { get; set; }
         public List<Wallet> Wallets { get; set; }
+
+        public List<RefreshToken>? RefreshTokens { get; set; }
     }
 }

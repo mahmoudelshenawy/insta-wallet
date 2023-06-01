@@ -1,0 +1,94 @@
+﻿@model PaypalViewModel
+
+@{
+    ViewData["Title"] = "Confirm Deposit";
+}
+@section styles {
+}
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-xl-6">
+                <!--alert here-->
+                <div class="card">
+                    <div class="card-header">
+                        <h3> @__["Deposit with Paypal"]</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="paypal-button-container"></div>
+                    </div>
+                    <input type="hidden" asp-for="Amount" value="@Model.Amount" id="Amount" />
+                    <input type="hidden" asp-for="TotalFees" value="@Model.TotalFees" id="TotalFees" />
+                    <input type="hidden" asp-for="CurrencyId" value="@Model.CurrencyId" id="CurrencyId" />
+                    <input type="hidden" asp-for="PaymentMethodId" value="@Model.PaymentMethodId" id="PaymentMethodId" />
+                    <input type="hidden" asp-for="Status" value="@Model.Status" id="Status" />
+                    <input type="hidden" asp-for="Currency" value="@Model.Currency" id="Currency" />
+                    <input type="hidden" asp-for="FixedFeeAmount" value="@Model.FixedFeeAmount" id="FixedFeeAmount" />
+                    <input type="hidden" asp-for="PercentFeeAmount" value="@Model.PercentFeeAmount" id="PercentFeeAmount" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts {
+    <script src="https://www.paypal.com/sdk/js?client-id=@Model.ClientId&disable-funding=paylater&currency=@Model.Currency"></script>
+
+    <script>
+
+        paypal.Buttons({
+            createOrder: function(data, actions) {
+                // This function sets up the details of the transaction, including the amount and line item details.
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: @Model.Amount
+                                                                                                                            }
+                    }]
+                });
+            },
+            onApprove: function(data, actions) {
+                // This function captures the funds from the transaction.
+                return actions.order.capture().then(function(details) {
+                    // This function shows a transaction success message to your buyer.
+                    // alert('Transaction completed by ' + details.payer.name.given_name);
+                    console.log(details.purchase_units[0].amount.value)
+                    var form = {
+                        Amount: $("#Amount").val(),
+                        CurrencyId: $("#CurrencyId").val(),
+                        Currency: $("#Currency").val(),
+                        EarlyPay: true,
+                        FixedFeeAmount: $("#FixedFeeAmount").val(),
+                        PercentFeeAmount: $("#PercentFeeAmount").val(),
+                        PaymentMethodId: $("#PaymentMethodId").val(),
+                        TotalFees: $("#TotalFees").val(),
+                        Status: $("#Status").val(),
+                    };
+
+                    var data = JSON.stringify(form);
+                    $.ajax({
+                        method: "POST",
+                        url: "/deposit/paypal/success",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': "application/json"
+                        },
+                        dataType: "json",
+                        data: data
+                    }).done(function(response) {
+                        console.log(response)
+                        if (response.success == true) {
+                            const { href, search, origin } = window.location;
+                            window.location.href = origin + `/deposit/success?Amount=${response.data.amount}` 
+                        } else {
+                            window.location.href = origin + "/deposit/fail"
+                        }
+
+                    }).fail(function(error) {
+                        console.log(error)
+                    })
+                })
+
+            }
+        }).render('#paypal-button-container');
+    </script>
+}

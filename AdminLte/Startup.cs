@@ -1,4 +1,5 @@
 ﻿using AdminLte.Areas.Repositories;
+using AdminLte.Configuration;
 using AdminLte.Data;
 using AdminLte.Data.Seeders;
 using AdminLte.Middleware;
@@ -7,14 +8,18 @@ using AdminLte.Providers;
 using AdminLte.Repositories;
 using AdminLte.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Localization;
+using Microsoft.IdentityModel.Tokens;
 using System.Globalization;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -23,24 +28,32 @@ namespace AdminLte
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        public IConfigurationRoot ConfigurationRoot { get; set; }
+        public static string ConnectionString { get; private set; }
 
-        public Startup(IConfiguration configuration)
+        public static IServiceProvider _service { get; private set; }
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             _configuration = configuration;
+            ConfigurationRoot = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appSettings.json")
+                .Build();
         }
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.Configure<JwtConfig>(_configuration.GetSection("JWT"));
 
             var AdminAuthenticationScheme = "Admin";
             var UserAuthenticationScheme = "User";
-
+            var bearerAuthenticationScheme = JwtBearerDefaults.AuthenticationScheme;
 
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -50,6 +63,22 @@ namespace AdminLte
               }).AddCookie(AdminAuthenticationScheme, options =>
               {
                   options.LoginPath = _configuration["Application:AdminLoginPath"];
+
+              }).AddJwtBearer(o =>
+              {
+                  o.RequireHttpsMetadata = false;
+                  o.SaveToken = false;
+                  o.TokenValidationParameters = new TokenValidationParameters
+                  {
+                      ValidateIssuerSigningKey = true,
+                      ValidateIssuer = true,
+                      ValidateAudience = true,
+                      ValidateLifetime = true,
+                      ValidIssuer = _configuration["JWT:Issuer"],
+                      ValidAudience = _configuration["JWT:Audience"],
+                      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Key"])),
+                      ClockSkew = TimeSpan.Zero
+                  };
               });
 
 
@@ -61,12 +90,16 @@ namespace AdminLte
                 options.AccessDeniedPath = _configuration["Application:AccessDeniedPath"];
             });
 
+         
+            services.AddAutoMapper(typeof(Startup));
+
+            
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", pl =>
                 {
                     pl.AddAuthenticationSchemes(AdminAuthenticationScheme)
-                    .RequireAuthenticatedUser();
+                    .RequireAuthenticatedUser().RequireClaim("Admin");
                 });
 
                 options.AddPolicy("User", pl =>
@@ -78,7 +111,7 @@ namespace AdminLte
             });
 
             services.AddLocalization();
-
+            services.AddHttpClient();
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequiredLength = 6;
@@ -106,6 +139,10 @@ namespace AdminLte
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
+            //services.AddStackExchangeRedisCache(options =>
+            //{
+            //    options.Configuration = "localhost:6379";
+            //});
 
             services.AddMvc(options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)
@@ -114,7 +151,13 @@ namespace AdminLte
         options.DataAnnotationLocalizerProvider = (type, factory) =>
             factory.Create(typeof(JsonStringLocalizerFactory));
     });
-
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             services.Configure<RequestLocalizationOptions>(options =>
             {
                 var supportedCultures = new[]
@@ -126,14 +169,18 @@ namespace AdminLte
                 options.SupportedCultures = supportedCultures;
                 options.SupportedUICultures = supportedCultures;
             });
-            services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
-            services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
-            services.AddScoped<IUploadService, UploadService>();
-            services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IAuthenticationUserRepository, AuthenticationUserRepository>();
-            services.AddScoped<IDepositRepository, DepositRepository>();
-            services.AddTransient<ISmsService, SmsService>();
-            services.AddTransient<IStripeRepository, StripeRepository>();
+            //services.InstallServices(_configuration, typeof(IServiceInstaller).Assembly);
+            services.InstallServicesFromAssymblyContaining<Startup>(_configuration);
+
+            //services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+            //services.AddSingleton<IStringLocalizerFactory, JsonStringLocalizerFactory>();
+            //services.AddScoped<IUploadService, UploadService>();
+            //services.AddScoped<IEmailService, EmailService>();
+            //services.AddScoped<IAuthenticationUserRepository, AuthenticationUserRepository>();
+            //services.AddScoped<IDepositRepository, DepositRepository>();
+            //services.AddTransient<ISmsService, SmsService>();
+            //services.AddTransient<IStripeRepository, StripeRepository>();
+            //services.AddTransient<IApiAuthenticationRepository, ApiAuthenticationRepository>();
 
             services.Configure<SMTPConfigModel>(_configuration.GetSection("SMTPConfig"));
             services.Configure<TwilioSettings>(_configuration.GetSection("Twilio"));
@@ -146,11 +193,13 @@ namespace AdminLte
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+           _service  = app.ApplicationServices;
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
             app.UseStaticFiles();
+           
 
             app.UseRouting();
 
@@ -162,13 +211,21 @@ namespace AdminLte
 
             app.UseRequestLocalization(RequestLocalizationOptions);
 
+            app.UseCors(builder =>
+            {
+                //builder.WithOrigins("http://localhost:4200");
+                //builder.AllowAnyMethod();
+                //builder.AllowAnyHeader();
+            });
+
             app.UseAuthentication();
             app.UseAuthorization();
 
-            // app.UseIsAuthenticated();
+            
+            app.UseSession();
 
-            // app.Map("/test",);
-           // app.Map("/test", HandleRedirectFromAdminRoute);
+           // ConnectionString = ConfigurationRoot.GetConnectionString("DefaultConnection");  option one
+            ConnectionString = _configuration.GetConnectionString("DefaultConnection"); ; //option two
 
             app.UseEndpoints(application =>
             {

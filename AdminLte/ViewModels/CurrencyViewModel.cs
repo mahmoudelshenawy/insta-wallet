@@ -13,10 +13,10 @@ namespace AdminLte.ViewModels
         [Required]
         public string Code { get; set; }
         [Required]
-        public string Symbol { get; set; }
+        public string? Symbol { get; set; }
         public string? Logo { get; set; }
         [Required]
-        public IFormFile LogoFile { get; set; }
+        public IFormFile? LogoFile { get; set; }
         public bool Default { get; set; }
         [Required(ErrorMessage ="Please Select Avalue")]
         public ExchangeFromEnum ExchangeFrom { get; set; }

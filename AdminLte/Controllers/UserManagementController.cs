@@ -3,6 +3,7 @@ using AdminLte.Data.Entities;
 using AdminLte.Models;
 using AdminLte.Repositories;
 using AdminLte.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

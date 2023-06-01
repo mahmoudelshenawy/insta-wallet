@@ -16,5 +16,6 @@ namespace AdminLte.Data.Entities
 
         public Currency Currency { get; set; }
 
+
     }
 }

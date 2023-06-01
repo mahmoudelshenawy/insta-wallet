@@ -2,12 +2,14 @@
 using AdminLte.Data.Entities;
 using AdminLte.Data.Enums;
 using AdminLte.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
 namespace AdminLte.Controllers
 {
+    [Authorize(AuthenticationSchemes ="Admin")]
     [Route("admin")]
     public class SettingsController : Controller
     {

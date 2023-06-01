@@ -3,8 +3,10 @@ using AdminLte.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using System.Security.Claims;
-using Twilio.Rest.Api.V2010.Account;
+using System.Text;
+using System.Text.Json;
 
 namespace AdminLte.Areas.User.Controllers
 {
@@ -13,13 +15,12 @@ namespace AdminLte.Areas.User.Controllers
     [Route("/")]
     public class DashboardController : Controller
     {
-        private readonly ISmsService _smsService;
         private readonly IStripeRepository _stripeRepository;
-
-        public DashboardController(ISmsService smsService, IStripeRepository stripeRepository)
+        private readonly IHttpClientFactory _httpClientFactory;
+        public DashboardController(IStripeRepository stripeRepository, IHttpClientFactory httpClientFactory)
         {
-            _smsService = smsService;
             _stripeRepository = stripeRepository;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpGet("dashboard")]
@@ -43,10 +44,42 @@ namespace AdminLte.Areas.User.Controllers
 
         [HttpGet("test")]
         [AllowAnonymous]
-        public IActionResult TestStripe()
+        public IActionResult TestStripeTwo()
         {
             var customers = _stripeRepository.DoStuffInStripe();
             return Ok(customers);
         }
+        [HttpGet("test/api")]
+        [AllowAnonymous]
+        public async Task<IActionResult> TestHttpClient()
+        {
+           using(var client = new HttpClient())
+            {
+                var uri = new Uri("https://jsonplaceholder.typicode.com/posts");
+                //var result = await client.GetAsync(uri);
+                //var json = await result.Content.ReadAsStringAsync();
+
+                var post = new Post
+                {
+                    Title = "Post title",
+                    Body = "post body",
+                    UserId = 22
+                };
+               var postJson = JsonSerializer.Serialize(post);
+                var payload = new StringContent(postJson, Encoding.UTF8, "application/json");
+                var result = await client.PostAsync(uri, payload);
+                var json = result.Content.ReadAsStringAsync();
+                return Ok(json);
+            }
+
+            return Ok();
+        }
+    }
+
+    public class Post
+    {
+        public string Title { get; set; }
+        public string Body { get; set; }
+        public int UserId { get; set; }
     }
 }

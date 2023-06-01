@@ -41,10 +41,10 @@
 
                 <!-- Deposit Money Form
                 ============================================= -->
-                <form id="depositForm" method="post" asp-area="User" asp-action="Confirm" >
-                   <input type="hidden" asp-for="FixedFeeAmount" id="FixedFeeAmount"/>
-                   <input type="hidden" asp-for="PercentFeeAmount" id="PercentFeeAmount"/>
-                   <input type="hidden" asp-for="TotalFees" id="TotalFees"/>
+                <form id="depositForm" method="post" asp-area="User" asp-action="Confirm">
+                    <input type="hidden" asp-for="FixedFeeAmount" id="FixedFeeAmount" />
+                    <input type="hidden" asp-for="PercentFeeAmount" id="PercentFeeAmount" />
+                    <input type="hidden" asp-for="TotalFees" id="TotalFees" />
                     <div class="mb-3">
                         <label for="youSend">@__["Amount"]</label>
                         <div class="input-group">
@@ -61,8 +61,9 @@
                         <label class="form-label">@__["currency"]</label>
                         <select asp-for="CurrencyId" id="CurrencyId" class="form-select" required="" asp-items="@Model.Currencies">
                         </select>
-                        <small class="text-muted">@__["fees"] (<span class="fixedFee">0.00</span> + <span class="percentFee">0.00</span>%)
-                            @__["Transactions fees"]  (<span class="totalFees">0.00</span>) 
+                        <small class="text-muted">
+                            @__["fees"] (<span class="fixedFee">0.00</span> + <span class="percentFee">0.00</span>%)
+                            @__["Transactions fees"]  (<span class="totalFees">0.00</span>)
                         </small>
                         <span asp-validation-for="CurrencyId" id="CurrencyId-error" class="text-danger"></span>
                     </div>
@@ -94,20 +95,22 @@
     <script>
         $(window).on('load', function() {
             let currency = $("#CurrencyId").val();
-
             getPaymentMethodsWithFeesLimitsBasedOnSelectedCurrency(currency);
 
         });
         $("#CurrencyId").on("change", function() {
             let currencyId = $("#currency").val();
+
             getPaymentMethodsWithFeesLimitsBasedOnSelectedCurrency(currencyId)
         });
 
         $("#PaymentMethodId").on("change", function() {
+            $(".submit-btn").attr('disabled', true)
             let paymentMethod = $("#paymentMethod").val();
             getDepositAmountFeesLimit()
         });
         $("#Amount").on("change", function() {
+            $(".submit-btn").attr('disabled', true)
             getDepositAmountFeesLimit()
         });
 
@@ -124,7 +127,7 @@
                         paymentMethods.forEach(pm => {
                             let name = pm.name;
                             switch (pm.name) {
-                                case "Strip":
+                                case "Stripe":
                                     name = "Visa"
                                     break;
                                 case "Paymob":
@@ -163,6 +166,7 @@
                 dataType: "json",
                 data: data,
             }).done(function(success) {
+                $(".submit-btn").removeAttr('disabled')
                 console.log(success)
                 let response = success.response
                 let error = success.error
@@ -173,7 +177,7 @@
                 $("#PercentFeeAmount").val(response.PercentFeeAmount)
                 $("#TotalFees").val(response.TotalFees)
 
-                 $(".submit-btn").removeAttr("disabled")
+                $(".submit-btn").removeAttr("disabled")
                 if (response.TotalFees > 0) {
                     let currency = $("#CurrencyId :selected").text();
                     $(".totalFees").html(`<span>${currency} ${response.TotalFees}</span>`)
@@ -184,9 +188,10 @@
                 }
                 if (error.status != undefined) {
                     $("#Amount-error").text(error.Amount)
-                    $(".submit-btn").attr("disabled" , true)
+                    $(".submit-btn").attr("disabled", true)
                 }
             }).fail(err => {
+                $(".submit-btn").attr('disabled', true)
                 console.log(err.responseJSON)
                 let errors = err.responseJSON
                 //if (errors?.Amount !== undefined) {
@@ -200,7 +205,7 @@
                         $(`#${error}-error`).append(`<span>${e}</span>`)
                     })
                 }
-                 $(".submit-btn").attr("disabled" , true)
+                $(".submit-btn").attr("disabled", true)
             })
 
         }

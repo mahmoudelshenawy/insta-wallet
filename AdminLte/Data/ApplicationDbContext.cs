@@ -8,26 +8,33 @@ namespace AdminLte.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        public ApplicationDbContext()
+        {
+            
+        }
         public ApplicationDbContext(DbContextOptions options):base(options)
         {
 
         }
 
-        public DbSet<Settings> Settings { get; set; }
-        public DbSet<PaymentMethod> PaymentMethods { get; set; }
-        public DbSet<TransactionTypes> TransactionTypes { get; set; }
-        public DbSet<Currency> Currencies { get; set; }
-        public DbSet<Country> Countries { get; set; }
-        public DbSet<CurrencyPaymentMethod> CurrencyPaymentMethods { get; set; }
-        public DbSet<FeeLimit> FeesLimits { get; set; }
-        public DbSet<Attachment> Attachments { get; set; }
-        public DbSet<Bank> Banks { get; set; }
+        public virtual DbSet<Settings> Settings { get; set; }
+        public virtual DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public virtual DbSet<TransactionTypes> TransactionTypes { get; set; }
+        public virtual DbSet<Currency> Currencies { get; set; }
+        public virtual DbSet<Country> Countries { get; set; }
+        public virtual DbSet<CurrencyPaymentMethod> CurrencyPaymentMethods { get; set; }
+        public virtual DbSet<FeeLimit> FeesLimits { get; set; }
+        public virtual DbSet<Attachment> Attachments { get; set; }
+        public virtual DbSet<Bank> Banks { get; set; }
 
-        public DbSet<Wallet> Wallets { get; set; }
-        public DbSet<Dummy> Dummies { get; set; }
-        public DbSet<Deposit> Deposits { get; set; }
+        public virtual DbSet<Wallet> Wallets { get; set; }
+        public virtual DbSet<Dummy> Dummies { get; set; }
+        public virtual DbSet<Deposit> Deposits { get; set; }
 
-        public DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<Transaction> Transactions { get; set; }
+        public virtual DbSet<PayoutSetting> PayoutSettings { get; set; }
+        public virtual DbSet<Withdrawal> Withdrawals { get; set; }
+        public virtual DbSet<WithdrawalDetail> WithdrawalDetails { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

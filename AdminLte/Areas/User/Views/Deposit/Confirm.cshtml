@@ -1,0 +1,78 @@
+﻿@model DepositViewModel
+
+@{
+    ViewData["Title"] = "Confirm Deposit";
+}
+@section styles {
+}
+    <div id="content" class="py-4">
+        <div class="container">
+
+            <!-- Steps Progress bar -->
+            <div class="row mt-4 mb-5">
+                <div class="col-lg-11 mx-auto">
+                    <div class="row widget-steps">
+                        <div class="col-4 step complete">
+                            <div class="step-name">@__["Details"]</div>
+                            <div class="progress">
+                                <div class="progress-bar"></div>
+                            </div>
+                            <a asp-action="Index" asp-area="User" class="step-dot"></a>
+                        </div>
+                        <div class="col-4 step active">
+                            <div class="step-name">@__["Confirm"]</div>
+                            <div class="progress">
+                                <div class="progress-bar"></div>
+                            </div>
+                            <a href="#" class="step-dot"></a>
+                        </div>
+                        <div class="col-4 step disabled">
+                            <div class="step-name">@__["Success"]</div>
+                            <div class="progress">
+                                <div class="progress-bar"></div>
+                            </div>
+                            <a href="#" class="step-dot"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h2 class="fw-400 text-center mt-3 mb-4">@__["Deposit Details"]</h2>
+            <div class="row">
+                <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+                    <div class="bg-white shadow-sm rounded p-3 pt-sm-4 pb-sm-5 px-sm-5 mb-4">
+                        <h3 class="text-5 fw-400 mb-3 mb-sm-4">@__["Deposit Money via"]</h3>
+                        <hr class="mx-n3 mx-sm-n5 mb-4">
+                        <!-- Deposit Money Confirm
+                        ============================================= -->
+                        <form id="form-send-money" asp-action="CompleteDeposit" method="post">
+                            <!-- the image background-->
+                            <div class="mb-3">
+                                @{
+                                var imagePath = Model.PaymentType + ".jpg";
+                            }
+                            <img src="~/images/payment_gateway/@imagePath" class="img-fluid" width="100%" />
+                        </div>
+                        <hr class="mx-n3 mx-sm-n5 mb-4">
+
+                        <input type="hidden" asp-for="Amount" value="@Model.Amount" />
+                        <input type="hidden" asp-for="TotalFees" value="@Model.TotalFees" />
+                        <input type="hidden" asp-for="CurrencyId" value="@Model.CurrencyId" />
+                        <input type="hidden" asp-for="PaymentMethodId" value="@Model.PaymentMethodId" />
+                        <input type="hidden" asp-for="PaymentType" value="@Model.PaymentType" />
+                        <input type="hidden" asp-for="Status" value="@Model.Status" />
+                        <input type="hidden" asp-for="FixedFeeAmount" value="@Model.FixedFeeAmount" />
+                        <input type="hidden" asp-for="PercentFeeAmount" value="@Model.PercentFeeAmount" />
+                        <h3 class="text-5 fw-400 mb-4">@__["Details"]</h3>
+                        <hr class="mx-n3 mx-sm-n5 mb-4">
+                        <p class="mb-1">@__["Deposit Amount"] <span class="text-3 float-end">@Model.Amount USD</span></p>
+                        <p class="mb-1">@__["total Fees"] <span class="text-3 float-end">@Model.TotalFees USD</span></p>
+                        <hr>
+                        <p class="text-4 fw-500">@__["after fees"]<span class="float-end">@(Model.Amount - Model.TotalFees) USD</span></p>
+                        <div class="d-grid"><button class="btn btn-primary">@__["Confirm"]</button></div>
+                    </form>
+                    <!-- Deposit Money Confirm end -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

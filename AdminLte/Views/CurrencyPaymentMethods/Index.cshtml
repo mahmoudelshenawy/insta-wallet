@@ -55,7 +55,7 @@
     <div class="row">
         <!-- List group -->
         <div class="list-group col-md-3" id="myList">
-            <a class="list-group-item list-group-item-action @(Model.pm == null || Model.pm == "Strip" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Strip" data-method="Strip">Strip</a>
+            <a class="list-group-item list-group-item-action @(Model.pm == null || Model.pm == "Stripe" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Stripe" data-method="Stripe">Stripe</a>
             <a class="list-group-item list-group-item-action @(Model.pm == "Paypal" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Paypal" data-method="Paypal">Paypal</a>
             <a class="list-group-item list-group-item-action @(Model.pm == "Paymob" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Paymob" data-method="Paymob">Paymob</a>
             <a class="list-group-item list-group-item-action @( Model.pm == "Bank" ? "active" : "")" asp-action="Index" asp-route-id="@Model.currentCurrency.Id" asp-route-pm="Bank" data-method="Bank">Bank</a>

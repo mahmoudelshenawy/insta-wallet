@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Deposits";
+}
+@section styles {
+    <partial name="_DatatablesStylesPartial" />
+
+    <style>
+        .dt-buttons {
+        }
+    </style>
+}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header d-flex">
+                <h4> All deposits </h4> <a class="btn btn-info mx-4" asp-action="ExportToCsv">csv</a>
+                <a class="btn btn-success mx-4" asp-action="ExportToExcel">Excel</a>
+
+                <form asp-action="ImportFromExcel" enctype="multipart/form-data" method="post">
+                <input type="file" name="file"/>
+                <button class="btn btn-primary mx-4">import excel</button>
+                </form>
+            </div>
+            <div class="card-body">
+                <div id="headerTable"></div>
+                <div style="width:100%; margin:0 auto;">
+                    <table id="datatable" class="table table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Date</th>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Fees</th>
+                                <th>Total Amount</th>
+                                <th>Currency</th>
+                                <th>Payment Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    @section scripts {
+    <!-- DataTables  & Plugins -->
+    <partial name="_DatatablesScriptsPartial" />
+    <script src="~/js/DepositsDataTable.js"></script>
+    <script>
+
+    </script>
+}
+

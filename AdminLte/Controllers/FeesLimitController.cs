@@ -12,7 +12,7 @@ namespace AdminLte.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        private List<string> _depositMethods = new List<string>{"Strip", "Paypal", "Paymob","Bank","PayUmoney",
+        private List<string> _depositMethods = new List<string>{"Strip","Stripe", "Paypal", "Paymob","Bank","PayUmoney",
             "PayeerWallet", "Bitcoin","VodafoneCash", "PerfectMoney", "Usdt", "Payoneer", "ZainCashIraq"};
 
         private List<string> _withdrawalMethods = new List<string>{"Paypal","Bank","Cash",

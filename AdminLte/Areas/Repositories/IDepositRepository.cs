@@ -15,5 +15,10 @@ namespace AdminLte.Areas.Repositories
          Task<Bank?> GetBankDetails(int bank_id);
 
         Task<bool> CreateDepositSuccess(DepositViewModel depositView);
+         Task<string> getUserEmail(string id);
+        Task<string> getCurrencyCode(int id);
+        Task<string> GetPaypalClientId(DepositViewModel depositView);
+
+        Task<Deposit> TestFeature();
     }
 }

@@ -6,6 +6,7 @@ using System.Security.Claims;
 
 namespace AdminLte.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Admin")]
     [Route("admin")]
     //[Authorize(Policy = "Admin")]
     public class AuthenticationController : Controller
@@ -22,7 +23,7 @@ namespace AdminLte.Controllers
         {
             return View();
         }
-        [HttpPost("register")]
+        [AllowAnonymous, HttpPost("register")]
         public async Task<IActionResult> Register(RegisterModel model)
         {
             if (ModelState.IsValid)
@@ -54,18 +55,18 @@ namespace AdminLte.Controllers
             //    }
 
             //}
-            if(User.FindFirstValue(ClaimTypes.Role) == "Admin")
+            if (User.FindFirstValue(ClaimTypes.Role) == "Admin")
             {
 
             }
-            if(User.HasClaim(ClaimTypes.Role , "Admin"))
+            if (User.HasClaim(ClaimTypes.Role, "Admin"))
             {
                 return RedirectToAction("Index", "Home");
             }
             return View();
         }
 
-        [HttpPost("login")]
+        [AllowAnonymous, HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel model, string ReturnUrl)
         {
             if (ModelState.IsValid)
@@ -82,7 +83,7 @@ namespace AdminLte.Controllers
                 //    return RedirectToAction("Index", "Home");
                 //}
 
-               // var result = await _authenticationRepository.LoginUserAsync(model);
+                // var result = await _authenticationRepository.LoginUserAsync(model);
                 if (result.Succeeded)
                 {
                     if (!string.IsNullOrEmpty(ReturnUrl))
@@ -107,7 +108,7 @@ namespace AdminLte.Controllers
         public async Task<IActionResult> LgoutOut()
         {
             await _authenticationRepository.LogoutAsync();
-            
+
             return Redirect("/admin");
         }
 

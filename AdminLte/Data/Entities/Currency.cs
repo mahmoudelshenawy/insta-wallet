@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdminLte.Data.Entities
 {
     public class Currency
     {
+        [Key]
         public int Id { get; set; }
         public string Type { get; set; }
         public string? Name { get; set; }
@@ -12,6 +14,7 @@ namespace AdminLte.Data.Entities
         public string? Symbol { get; set; } 
         public string? Logo { get; set; }
 
+    
         public bool Default { get; set; }
 
         public ExchangeFromEnum ExchangeFrom { get; set; } = ExchangeFromEnum.Local;

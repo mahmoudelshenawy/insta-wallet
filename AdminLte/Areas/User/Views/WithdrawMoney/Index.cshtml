@@ -1,0 +1,378 @@
+﻿@model WithdrawViewModel
+@{
+    ViewData["Title"] = "Withdraw Money";
+}
+
+@section styles {
+    <link rel="stylesheet" type="text/css" href="~/client/vendor/bootstrap-select/css/bootstrap-select.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/client/vendor/currency-flags/css/currency-flags.min.css" />
+}
+<!-- Steps Progress bar -->
+<div class="row mt-2 mb-2">
+    <div class="col-lg-11 mx-auto">
+        <div class="row widget-steps">
+            <div class="col-4 step active">
+                <div class="step-name">@__["Details"]</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="step-dot"></a>
+            </div>
+            <div class="col-4 step disabled">
+                <div class="step-name">@__["Confirm"]</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="step-dot"></a>
+            </div>
+            <div class="col-4 step disabled">
+                <div class="step-name">@__["Success"]</div>
+                <div class="progress">
+                    <div class="progress-bar"></div>
+                </div>
+                <a href="#" class="step-dot"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="fw-400 text-center mt-3 mb-4">@__["Withdraw Money"]</h2>
+
+<div class="row">
+    <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+        <div class="bg-white shadow-sm rounded p-3 pt-sm-5 pb-sm-5 px-sm-5 mb-4">
+            <partial name="_Alerts"/>
+            <!-- Withdraw Money Form
+            ============================================= -->
+            <form id="withdrawForm" method="post" asp-area="User" asp-action="SubmitPayoutSettingForm">
+                <input type="hidden" asp-for="FixedFeeAmount" id="FixedFeeAmount" />
+                <input type="hidden" asp-for="PercentFeeAmount" id="PercentFeeAmount" />
+                <input type="hidden" asp-for="TotalFees" id="TotalFees" />
+                <div class="mb-3">
+                    <label for="paymentMethod" class="form-label">@__["Payment Method"]</label>
+                    <select asp-for="PaymentMethodId" asp-items="Model.PaymentMethods" class="form-select" required="" id="PaymentMethodId">
+                    </select>
+                    <span asp-validation-for="PaymentMethodId" id="PaymentMethodId-error" class="text-danger"></span>
+                </div>
+                <div class="mb-3 d-none create_or_select_div">
+                    <input type="hidden" asp-for="PayoutSetting.NewPayoutSetting" id="newPayoutSetting" />
+                    <select class="form-control" id="create_or_select">
+                        <option value="null">-----------</option>
+                        <option value="exist">@__["select from saved payout settings"]</option>
+                        <option value="create">@__["create new payout setting"]</option>
+                    </select>
+                </div>
+
+                <div class="mb-3 d-none payoutSettings">
+                    <label for="paymentMethod" class="form-label">@__["payout settings"]</label>
+                    <select class="form-control" id="payoutSettingId"></select>
+                </div>
+                <!-- Payout forms start -->
+                <!--Bank Form start-->
+                <div id="BankForm" class="paymentMethodForm d-none row">
+
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Account name"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.BankSetting.AccountName" />
+                        <span asp-validation-for="PayoutSetting.BankSetting.AccountName" class="text-danger"></span>
+
+                    </div>
+
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Account number"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.BankSetting.AccountNumber" onkeyup="this.value = this.value.replace(/\s/g, '')" />
+                        <span asp-validation-for="PayoutSetting.BankSetting.AccountNumber" class="text-danger"></span>
+
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Swift code"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.BankSetting.SwiftCode" onkeyup="this.value = this.value.replace(/\s/g, '')" />
+                        <span asp-validation-for="PayoutSetting.BankSetting.SwiftCode" class="text-danger"></span>
+
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Bank name"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.BankSetting.BankName" />
+                        <span asp-validation-for="PayoutSetting.BankSetting.BankName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Branch name"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.BankSetting.BankBranchName" />
+                        <span asp-validation-for="PayoutSetting.BankSetting.BankBranchName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Branch City"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.BankSetting.BankBranchCity" />
+                        <span asp-validation-for="PayoutSetting.BankSetting.BankBranchCity" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Branch Address"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.BankSetting.BankBranchAddress" />
+                        <span asp-validation-for="PayoutSetting.BankSetting.BankBranchAddress" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Country"]</label>
+                        <select asp-for="PayoutSetting.BankSetting.CountryId" asp-items="ViewBag.Countries" id="countriesList" class="form-control"></select>
+                        <span asp-validation-for="PayoutSetting.BankSetting.CountryId" class="text-danger"></span>
+                    </div>
+                </div>
+                <!--Bank Form end-->
+                <!--Cash Form start-->
+                <div id="CashForm" class="paymentMethodForm d-none row">
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["full Name"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.CashSetting.FullName" />
+                        <span asp-validation-for="PayoutSetting.CashSetting.FullName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["phone number"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.CashSetting.Phone" />
+                        <span asp-validation-for="PayoutSetting.CashSetting.Phone" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Country"]</label>
+                        <select asp-for="PayoutSetting.CashSetting.CountryId" asp-items="ViewBag.Countries" class="form-control"></select>
+                        <span asp-validation-for="PayoutSetting.CashSetting.CountryId" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["City"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.CashSetting.City" />
+                        <span asp-validation-for="PayoutSetting.CashSetting.City" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-sm-12">
+                        <label for="account_name">@__["Preferred Method"]</label>
+                        <textarea asp-for="PayoutSetting.CashSetting.PreferredMethod" class="form-control"></textarea>
+                        <span asp-validation-for="PayoutSetting.CashSetting.PreferredMethod" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <!--Cash Form end-->
+                <!--Paypal Form start-->
+                <div id="PaypalForm" class="paymentMethodForm d-none row">
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["email"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.PaypalSetting.Email" />
+                        <span asp-validation-for="PayoutSetting.PaypalSetting.Email" class="text-danger"></span>
+                    </div>
+                </div>
+                <!--Paypal Form end-->
+                <!--PayeerWallet Form start-->
+                <div id="PayeerWalletForm" class="paymentMethodForm d-none row">
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <input type="hidden" asp-for="PayoutSetting.PayeerWalletSetting.MethodName" value="PayeerWallet" />
+                        <label for="account_name">@__["Wallet Number"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.PayeerWalletSetting.WalletNumber" onkeyup="this.value = this.value.replace(/\s/g, '')" />
+                        <span asp-validation-for="PayoutSetting.PayeerWalletSetting.WalletNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Description"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.PayeerWalletSetting.Description" />
+                        <span asp-validation-for="PayoutSetting.PayeerWalletSetting.Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <!--PayeerWallet Form end-->
+                <!--VodafoneCash Form start-->
+                <div id="VodafoneCashForm" class="paymentMethodForm d-none row">
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Wallet Name"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.VodafoneCashSetting.WalletName" onkeyup="this.value = this.value.replace(/\s/g, '')" />
+                        <span asp-validation-for="PayoutSetting.VodafoneCashSetting.WalletName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <input type="hidden" asp-for="PayoutSetting.VodafoneCashSetting.MethodName" value="VodafoneCash" />
+                        <label for="account_name">@__["Wallet Number"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.VodafoneCashSetting.WalletNumber" onkeyup="this.value = this.value.replace(/\s/g, '')" />
+                        <span asp-validation-for="PayoutSetting.VodafoneCashSetting.WalletNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-md-6 col-sm-12">
+                        <label for="account_name">@__["Description"]</label>
+                        <input class="form-control" asp-for="PayoutSetting.VodafoneCashSetting.Description" />
+                        <span asp-validation-for="PayoutSetting.VodafoneCashSetting.Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <!--VodafoneCash Form end-->
+                <!-- Payout forms end -->
+                <div class="mb-3">
+                    <label class="form-label">@__["currency"]</label>
+                    <select asp-for="CurrencyId" id="CurrencyId" class="form-select" required="" asp-items="@Model.Currencies">
+                    </select>
+                    <small class="text-muted">
+                        @__["fees"] (<span class="fixedFee">0.00</span> + <span class="percentFee">0.00</span>%)
+                        @__["Transactions fees"]  (<span class="totalFees">0.00</span>)
+                    </small>
+                    <span asp-validation-for="CurrencyId" id="CurrencyId-error" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label for="youSend">@__["Amount"]</label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input type="text" asp-for="Amount" class="form-control"
+                               data-bv-field="amount" id="Amount"
+                               onkeyup="this.value = this.value.replace (/^\.|[^\d\.]/g, '')" placeholder="0.00">
+                    </div>
+                    <span class="amountLimit" style="color: red;font-weight: bold"></span>
+                    <span asp-validation-for="Amount" id="Amount-error" class="text-danger"></span>
+
+                </div>
+                <div class="mb-2 d-none SavePayoutSetting">
+                    <label asp-for="PayoutSetting.SavePayoutSetting">
+                        @__["Save Payout Setting"]
+                        <input asp-for="PayoutSetting.SavePayoutSetting" />
+                    </label>
+                </div>
+                <p class="text-muted mt-4">
+                    @__["Transactions fees"] <span class="float-end d-flex align-items-center">
+                        <del class="feeFees d-none">1.00 USD</del>
+                        <span class="badge bg-info text-1 text-white fw-500 ms-2 freeFees d-none">Free</span>
+                        <span class="totalFees"></span>
+                    </span>
+                </p>
+
+                <div class="d-grid"><button type="submit" class="btn btn-primary submit-btn" disabled>@__["Continue"]</button></div>
+            </form>
+            <!-- Withdraw Money Form end -->
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/client/vendor/bootstrap-select/js/bootstrap-select.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let selectedPaymentMethod = $("#PaymentMethodId").val();
+
+            $("#PaymentMethodId").on("change", function (e) {
+                let paymentMethodId = e.target.value;
+                if (e.target.value != "null") {
+                    //get active currencies for method
+                    //check for payout settings
+                    $(".create_or_select_div").removeClass("d-none");
+                    getActiveCurrenciesForPaymentMethod(paymentMethodId);
+                    let selectedPaymentMethod = $("#PaymentMethodId option:selected").text();
+                    showPayoutSettingFormBasedOnSelectedPaymentMethod(selectedPaymentMethod);
+                } else {
+                    $(".create_or_select_div").addClass("d-none");
+                    let selectedPaymentMethod = $("#PaymentMethodId option:selected").text();
+                    showPayoutSettingFormBasedOnSelectedPaymentMethod(selectedPaymentMethod);
+                }
+            })
+
+            $("#create_or_select").on("change", function (e) {
+                let option = e.target.value;
+                if (option == "exist") {
+                    $(".payoutSettings").removeClass("d-none");
+                    $('.paymentMethodForm').addClass("d-none");
+                    $(".SavePayoutSetting").addClass("d-none")
+                    $("#newPayoutSetting").val(false);
+                    GetStoredPayoutSetting();
+                } else if (option == "create") {
+                    $("#newPayoutSetting").val(true);
+                    $(".SavePayoutSetting").removeClass("d-none");
+                    $(".payoutSettings").addClass("d-none")
+                    let selectedPaymentMethod = $("#PaymentMethodId option:selected").text();
+                    showPayoutSettingFormBasedOnSelectedPaymentMethod(selectedPaymentMethod);
+                } else {
+                    $(".payoutSettings").addClass("d-none");
+                    $('.paymentMethodForm').addClass("d-none");
+                    $('.SavePayoutSetting').addClass("d-none");
+                    $("#newPayoutSetting").val(false);
+                }
+            })
+            var timer;
+            $("#Amount, #CurrencyId, #PaymentMethodId").on("change", function () {
+                let amount = $("#Amount").val();
+                let currencyId = $("#CurrencyId").val();
+                let paymentMethodId = $("#PaymentMethodId").val();
+                clearTimeout(timer);
+                setTimeout(() => {
+                    //getFeesAmount
+                    if (amount > 0 && currencyId != null && paymentMethodId != "null") {
+                        $(".submit-btn").attr("disabled", "true");
+                        CheckAmountFeesAndBalance(amount, currencyId, paymentMethodId);
+                    }
+                }, 500);
+            })
+            function getActiveCurrenciesForPaymentMethod(methodId) {
+                $.ajax({
+                    url: "/withdraw-money/get-active-currencies-for-method/" + methodId,
+                    type: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': "application/json"
+                    },
+                    method: "GET",
+                    dataType: "json",
+                }).done(function (success) {
+
+                    console.log(success)
+                    if (success.success == true) {
+                        let output = ""
+                        success.currencies.forEach(c => {
+                            output += `<option value="${c.id}" ${c.default == true ? "selected" : ""}>${c.code}</option>`
+                        })
+                        $("#CurrencyId").html(output);
+                    }
+                }).fail(function (error) {
+                    console.log(error)
+                })
+            }
+
+            function showPayoutSettingFormBasedOnSelectedPaymentMethod(methodName) {
+                if ($("#create_or_select").val() == "create") {
+                    $('.paymentMethodForm').addClass("d-none");
+                    $(`#${methodName}Form`).removeClass("d-none");
+                }
+            }
+            function GetStoredPayoutSetting(){
+                let paymentMethodId = $("#PaymentMethodId").val();
+                $.ajax({
+                    url: "/withdraw-money/get-payout-settings/" + paymentMethodId,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': "application/json"
+                    },
+                    method: "GET",
+                    dataType: "json",
+                }).done(function (success) {
+                    console.log(success)
+                }).fail(function (error) {
+                    console.log(error)
+                })
+            }
+            function CheckAmountFeesAndBalance(amount, currencyId, paymentMethodId) {
+                var form = {
+                    amount,
+                    currencyId,
+                    paymentMethodId
+                }
+                var data = JSON.stringify(form);
+                $.ajax({
+                    url: "/withdraw-money/CheckAmountFeesAndBalance",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': "application/json"
+                    },
+                    method: "POST",
+                    dataType: "json",
+                    data: data
+                }).done(function (success) {
+                    console.log(success)
+                    if (success.success == true) {
+                        $(".fixedFee").text(success.dataSet.FixedFeeAmount);
+                        $(".percentFee").text(success.dataSet.PercentFeeAmount);
+                        $(".totalFees").text(success.dataSet.TotalFees);
+                        $(".submit-btn").removeAttr("disabled")
+                    }
+                    if (success.message != null) {
+                        $("#Amount-error").text(success.message)
+                    }
+                }).fail(function (error) {
+                    console.log(error)
+                });
+
+
+            }
+        })
+    </script>
+ }

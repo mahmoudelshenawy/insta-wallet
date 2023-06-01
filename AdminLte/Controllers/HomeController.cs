@@ -12,7 +12,7 @@ using System.Security.Claims;
 
 namespace AdminLte.Controllers
 {
-    [Authorize(Policy = "Admin")]
+    [Authorize(AuthenticationSchemes = "Admin")]
     [Route("admin")]
     public class HomeController : Controller
     {

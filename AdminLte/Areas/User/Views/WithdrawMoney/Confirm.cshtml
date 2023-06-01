@@ -1,0 +1,75 @@
+﻿@using AdminLte.Data.Enums;
+@model WithdrawViewModel
+@{
+    ViewData["Title"] = "Confirm";
+}
+
+<!-- Content
+============================================= -->
+<div id="content" class="py-4">
+    <div class="container">
+
+        <!-- Steps Progress bar -->
+        <div class="row mt-4 mb-5">
+            <div class="col-lg-11 mx-auto">
+                <div class="row widget-steps">
+                    <div class="col-4 step complete">
+                        <div class="step-name">@__["Details"]</div>
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <a href="#" class="step-dot"></a>
+                    </div>
+                    <div class="col-4 step active">
+                        <div class="step-name">@__["Confirm"]</div>
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <a href="#" class="step-dot"></a>
+                    </div>
+                    <div class="col-4 step disabled">
+                        <div class="step-name">@__["Success"]</div>
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                        </div>
+                        <a href="#" class="step-dot"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h2 class="fw-400 text-center mt-3 mb-4">@__["Withdraw Money"]</h2>
+        <div class="row">
+            <div class="col-md-9 col-lg-7 col-xl-6 mx-auto">
+                <!-- Withdraw Money Confirm
+                ============================================= -->
+                <div class="bg-white shadow-sm rounded p-3 pt-sm-5 pb-sm-5 px-sm-5 mb-4">
+                    <partial name="_Alerts" />
+                    <p class="lead text-center alert alert-info">
+                       @__["You are Withdraw money"]<br>
+                        @__["to"]<br>
+                        @if (Model.PaymentMethod == WithdrawalPaymentMethodsEnum.Cash.ToString())
+                        {
+                            <span class="fw-500">@__["full Name"] ==> @Model.PayoutSetting.CashSetting.FullName</span><br />
+                            <span class="fw-500">@__["phone"] ==> @Model.PayoutSetting.CashSetting.Phone</span>
+
+                            <br />
+                            <span class="fw-500">@__["Preferred Method"] ==> @Model.PayoutSetting.CashSetting.PreferredMethod</span>
+
+                            <br />
+                        }
+                        
+                    </p>
+                    <p class="mb-2 mt-4">@__["Amount to Withdraw"] <span class="text-3 float-end">@(Model.Amount) @Model.Currency </span></p>
+                    <p class="text-muted">@__["fees"] <span class="float-end d-flex align-items-center">@Model.TotalFees @Model.Currency</span></p>
+                    <hr>
+                    <p class="text-4 fw-500">@__["Total Amount"]<span class="float-end">@Model.TotalAmount @Model.Currency</span></p>
+                    <form id="form-withdraw-money-confirm" asp-action="WithdrawSuccess" asp-area="User" method="post">
+                        <div class="d-grid"><button class="btn btn-primary">@__["Withdraw Money"]</button></div>
+                    </form>
+                </div>
+                <!-- Withdraw Money Confirm end -->
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Content end -->

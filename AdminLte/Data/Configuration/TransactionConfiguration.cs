@@ -22,10 +22,9 @@ namespace AdminLte.Data.Configuration
             builder.HasOne(b => b.Currency).WithMany(p => p.Transactions).HasForeignKey(b => b.CurrencyId).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(b => b.Attachment).WithOne().OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(b => b.ConfirmFile).WithOne().OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(b => b.User).WithOne().OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(b => b.EndUser).WithOne().OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(b => b.Bank).WithOne().OnDelete(DeleteBehavior.NoAction);
-            builder.HasOne(b => b.TransactionType).WithOne().OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(b => b.User).WithMany().OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(b => b.Bank).WithMany().OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(b => b.TransactionType).WithMany().OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

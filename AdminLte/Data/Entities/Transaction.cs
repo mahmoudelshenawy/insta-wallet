@@ -7,15 +7,15 @@ namespace AdminLte.Data.Entities
     {
         public int Id { get; set; }
         public string UserId { get; set; }
-        public string EndUserId { get; set; }
+        public string? EndUserId { get; set; }
         public int CurrencyId { get; set; }
         public int PaymentMethodId { get; set; }
         public string? SentFrom { get; set; }
-        public int AttachmentId { get; set; }
-        public int ConfirmAttachmentId { get; set; }
+        public int? AttachmentId { get; set; }
+        public int? ConfirmAttachmentId { get; set; }
         public string? Uuid { get; set; }
         public PaymentTypeEnum? PaymentType { get; set; } 
-        public int PaymentTypeId { get; set; }   //which method wallet, payoneer, cards, bank 
+        public int? PaymentTypeId { get; set; }   //which method wallet, payoneer, cards, bank 
         public int? TransactionTypeId { get; set; }
         public int? BankId { get; set; }
 
@@ -40,12 +40,12 @@ namespace AdminLte.Data.Entities
         [ForeignKey("UserId")]
         public virtual ApplicationUser User { get; set; }
         [ForeignKey("EndUserId")]
-        public virtual ApplicationUser EndUser { get; set; }
+        public virtual ApplicationUser? EndUser { get; set; }
         public virtual PaymentMethod PaymentMethod { get; set; }
         public virtual Currency Currency { get; set; }
-        public virtual Attachment Attachment { get; set; }
+        public virtual Attachment? Attachment { get; set; }
         [ForeignKey("ConfirmAttachmentId")]
-        public virtual Attachment ConfirmFile { get; set; }
+        public virtual Attachment? ConfirmFile { get; set; }
         public virtual Bank? Bank { get; set; }
 
         [ForeignKey("TransactionTypeId")]
@@ -77,6 +77,7 @@ namespace AdminLte.Data.Entities
     {
         Bank,
         PayeerWallet,
+        Stripe,
         Strip,
         Paypal,
         Paymob,
